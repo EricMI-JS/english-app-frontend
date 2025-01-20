@@ -163,7 +163,7 @@ export default function WordForm({ handleClose, initialData }: WordFormProps) {
                 </div>
 
                 <Button type="submit" className="w-full" variant="contained" sx={{ mt: 3 }}>
-                    Confirmar
+                    Save
                 </Button>
             </div>
         </form>

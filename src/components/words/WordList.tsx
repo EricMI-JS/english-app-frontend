@@ -1,8 +1,16 @@
 import { useState, useEffect } from 'react';
-import { Button, Modal, Typography } from '@mui/material';
+import { Modal, Typography } from '@mui/material';
 import { toast } from 'sonner';
 import WordForm from './WordForm'; // Asegúrate de importar tu formulario aquí
 import { Word } from '../../types/quiz';
+import {
+    LeadingActions,
+    SwipeableList,
+    SwipeableListItem,
+    SwipeAction,
+    TrailingActions
+} from 'react-swipeable-list'
+import 'react-swipeable-list/dist/styles.css'
 import * as wordService from '../../services/wordService';
 
 const WordList = () => {
@@ -27,11 +35,11 @@ const WordList = () => {
     }, []);
 
     // Función para eliminar una palabra
-    const deleteWord = async (id: string) => {
+    const handleDelete = async (id: string) => {
         try {
             await wordService.deleteWord(id)
             toast.success('Palabra eliminada exitosamente.');
-            setWords((prev) => prev.filter((word) => word.id !== id)); // Actualiza la lista localmente
+            setWords((prev) => prev.filter((word) => word.id !== id));
         } catch (error) {
             console.error('Error deleting word:', error);
             toast.error('Error al eliminar la palabra.');
@@ -50,43 +58,37 @@ const WordList = () => {
         setIsModalOpen(false);
     };
 
+    const leadingActions = (word: Word) => (
+        <LeadingActions>
+          <SwipeAction onClick={() => handleEdit(word)}>
+            Actualizar
+          </SwipeAction>
+        </LeadingActions>
+      )
+      
+      const trailingActions = (wordId: string) => (
+        <TrailingActions>
+          <SwipeAction onClick={() => handleDelete(wordId)}>
+            Eliminar
+          </SwipeAction>
+        </TrailingActions>
+      )
+
     return (
-        <div className="p-4">
-            <Typography variant="h5">
-                <p className='mb-4'>Lista de palabras</p>
-            </Typography>
+        <>
             <ul className="space-y-4">
                 {words.map((word) => (
-                    <li key={word.id} className="flex justify-between items-center border-b pb-2">
-                        <div>
-                            <Typography variant="body1">
-                                <strong>{word.word}</strong> - {word.definition}
-                            </Typography>
-                            <Typography variant="body2" className="text-gray-500">
-                                {word.exampleSentence}
-                            </Typography>
-                        </div>
-                        <div className="flex space-x-2">
-                            <Button
-                                variant="outlined"
-                                color="primary"
-                                onClick={() => handleEdit(word)}
-                            >
-                                Editar
-                            </Button>
-                            <Button
-                                variant="outlined"
-                                color="secondary"
-                                onClick={() => deleteWord(word.id!)}
-                            >
-                                Eliminar
-                            </Button>
-                        </div>
-                    </li>
+                    <SwipeableList>
+                        <SwipeableListItem leadingActions={leadingActions(word)} trailingActions={trailingActions(word.id!)}>
+                            <li key={word.id} className="flex flex-col bg-white rounded-md p-4 w-full">
+                                <p className='font-semibold text-xl mb-1 capitalize'>{word.word}</p>
+                                <p className='text-gray-400 text-sm'>{word.definition}</p>
+                            </li>
+                        </SwipeableListItem>
+                    </SwipeableList>
                 ))}
             </ul>
 
-            {/* Modal para editar */}
             <Modal
                 open={isModalOpen}
                 onClose={handleClose}
@@ -102,7 +104,8 @@ const WordList = () => {
                     <WordForm handleClose={handleClose} initialData={selectedWord!} />
                 </div>
             </Modal>
-        </div>
+        </>
+
     );
 };
 
