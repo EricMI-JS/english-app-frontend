@@ -5,7 +5,6 @@ import { ProgressBar } from '../../components/quiz/ProgressBar';
 import { QuestionCard } from '../../components/quiz/QuestionCard';
 import { QuizResults } from '../../components/quiz/QuizResults';
 import { toast } from 'sonner';
-import { Button } from '@mui/material';
 import { getQuiz } from '../../services/quizService';
 
 export default function QuizPage() {
