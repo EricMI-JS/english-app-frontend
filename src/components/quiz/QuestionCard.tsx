@@ -1,15 +1,23 @@
 import { Question } from '../../types/quiz';
-
+import { Tooltip, IconButton } from '@mui/material';
+import HelpIcon from '@mui/icons-material/Help';
 interface QuestionCardProps {
   question: Question;
   selectedAnswer: number | null;
   onSelectAnswer: (index: number) => void;
 }
 
-export function QuestionCard({ question, selectedAnswer, onSelectAnswer}: QuestionCardProps) {
+export function QuestionCard({ question, selectedAnswer, onSelectAnswer }: QuestionCardProps) {
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-semibold text-gray-800 capitalize">{question.text}</h2>
+      <div className='flex justify-between'>
+        <h2 className="text-xl font-semibold text-gray-800 capitalize">{question.text}</h2>
+        <Tooltip title={question.exampleSentence ?? 'Prueba tooltip'}>
+          <IconButton>
+            <HelpIcon />
+          </IconButton>
+        </Tooltip>
+      </div>
       <div className="space-y-2">
         {question.options.map((option, index) => {
           let buttonClasses = 'w-full p-4 text-left rounded-lg transition ';

@@ -15,6 +15,7 @@ export type Question = {
   text: string;
   options: string[];
   correctAnswer: number;
+  exampleSentence: string;
 }
 
 export type QuizState = {
