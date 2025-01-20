@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, SetStateAction, Dispatch } from 'react';
 import { Modal, Typography } from '@mui/material';
 import { toast } from 'sonner';
-import WordForm from './WordForm'; // Asegúrate de importar tu formulario aquí
+import WordForm from './WordForm';
 import { Word } from '../../types/quiz';
 import {
     LeadingActions,
@@ -11,28 +11,32 @@ import {
     TrailingActions
 } from 'react-swipeable-list'
 import 'react-swipeable-list/dist/styles.css'
+import { useFetchWords } from '../../hooks/useFetchWords';
 import * as wordService from '../../services/wordService';
 
-const WordList = () => {
-    const [words, setWords] = useState<Word[]>([]);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedWord, setSelectedWord] = useState<Word | null>(null); // Palabra seleccionada para editar
 
-    // Función para obtener la lista de palabras
-    const fetchWords = async () => {
-        try {
-            const response = await wordService.getAllWords();
-            setWords(response);
-        } catch (error) {
-            console.error('Error fetching words:', error);
-            toast.error('Error al cargar la lista de palabras.');
-        }
-    };
+export type WordListProps = {
+    shouldFetchWords: boolean
+    setShouldFetchWords: Dispatch<SetStateAction<boolean>>
+}
+
+const WordList = ({ shouldFetchWords, setShouldFetchWords }: WordListProps) => {
+    const { words, setWords, error } = useFetchWords(shouldFetchWords);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedWord, setSelectedWord] = useState<Word | null>(null);
 
     // Cargar palabras al montar el componente
     useEffect(() => {
-        fetchWords();
-    }, []);
+        if (shouldFetchWords) {
+            setShouldFetchWords(false)
+        }
+    }, [shouldFetchWords, setShouldFetchWords]);
+
+    useEffect(() => {
+        if (error) {
+            toast.error('Failed to fetch wordst');
+        }
+    }, [error])
 
     // Función para eliminar una palabra
     const handleDelete = async (id: string) => {
@@ -60,25 +64,25 @@ const WordList = () => {
 
     const leadingActions = (word: Word) => (
         <LeadingActions>
-          <SwipeAction onClick={() => handleEdit(word)}>
-            Actualizar
-          </SwipeAction>
+            <SwipeAction onClick={() => handleEdit(word)}>
+                Actualizar
+            </SwipeAction>
         </LeadingActions>
-      )
-      
-      const trailingActions = (wordId: string) => (
+    )
+
+    const trailingActions = (wordId: string) => (
         <TrailingActions>
-          <SwipeAction onClick={() => handleDelete(wordId)}>
-            Eliminar
-          </SwipeAction>
+            <SwipeAction onClick={() => handleDelete(wordId)}>
+                Eliminar
+            </SwipeAction>
         </TrailingActions>
-      )
+    )
 
     return (
         <>
             <ul className="space-y-4">
                 {words.map((word) => (
-                    <SwipeableList>
+                    <SwipeableList key={word.id}>
                         <SwipeableListItem leadingActions={leadingActions(word)} trailingActions={trailingActions(word.id!)}>
                             <li key={word.id} className="flex flex-col bg-white rounded-md p-4 w-full">
                                 <p className='font-semibold text-xl mb-1 capitalize'>{word.word}</p>
@@ -86,6 +90,7 @@ const WordList = () => {
                             </li>
                         </SwipeableListItem>
                     </SwipeableList>
+
                 ))}
             </ul>
 

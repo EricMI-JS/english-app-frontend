@@ -55,11 +55,11 @@ export default function WordForm({ handleClose, initialData }: WordFormProps) {
             const meanings = data[0]?.meanings.flatMap((meaning: any) =>
                 meaning.definitions.map((def: any) => def.definition)
             );
-            setDefinitionSuggestions(meanings || ['No se encontraron definiciones.']);
+            setDefinitionSuggestions(meanings || ['No definitions found.']);
             setValue('definition', ''); // Limpia el valor actual para forzar la selección
         } catch (error) {
             console.error('Error fetching definitions:', error);
-            setDefinitionSuggestions(['No se encontraron definiciones.']);
+            setDefinitionSuggestions(['No definitions found.']);
         }
     };
 
@@ -74,11 +74,11 @@ export default function WordForm({ handleClose, initialData }: WordFormProps) {
     const handleWordForm = async (formData: Word) => {
       try {
         await createWord(formData);
-        toast.success('Palabra guardada exitosamente.');
+        toast.success('Word saved!.');
         handleClose(); // Cerrar el modal
       } catch (error) {
         console.error('Error saving word:', error);
-        toast.error('Error al guardar la palabra.');
+        toast.error('There was an error.');
       }
     };
     
@@ -91,7 +91,7 @@ export default function WordForm({ handleClose, initialData }: WordFormProps) {
                     <Controller
                         name="word"
                         control={control}
-                        rules={{ required: 'La palabra es requerida' }}
+                        rules={{ required: 'required' }}
                         render={({ field }) => (
                             <Autocomplete
                                 value={watch('word')} // Usa el valor actual de React Hook Form
@@ -105,7 +105,7 @@ export default function WordForm({ handleClose, initialData }: WordFormProps) {
                                 renderInput={(params) => (
                                     <TextField
                                         {...params}
-                                        label="Palabra"
+                                        label="Word"
                                         variant="outlined"
                                         error={!!errors.word}
                                         helperText={errors.word?.message}
@@ -135,14 +135,14 @@ export default function WordForm({ handleClose, initialData }: WordFormProps) {
                         renderInput={(params) => (
                             <TextField
                                 {...params}
-                                label="Definición"
+                                label="Definition"
                                 variant="outlined"
                                 multiline
                                 rows={3}
                                 inputRef={definitionInputRef}
                                 error={!!errors.definition}
                                 helperText={errors.definition?.message}
-                                {...register('definition', { required: 'La definición es requerida' })}
+                                {...register('definition', { required: 'Required' })}
                             />
                         )}
                     />
@@ -150,12 +150,12 @@ export default function WordForm({ handleClose, initialData }: WordFormProps) {
 
                     <TextField
                         className="w-full"
-                        label="Enunciado de ejemplo"
+                        label="Example sentence"
                         variant="outlined"
                         multiline
                         rows={3}
                         {...register('exampleSentence', {
-                            required: 'El enunciado es requerido',
+                            required: 'Required',
                         })}
                         error={errors.exampleSentence ? true : false}
                         helperText={errors.exampleSentence ? errors.exampleSentence.message : ''}

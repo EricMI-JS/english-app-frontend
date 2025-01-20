@@ -10,9 +10,15 @@ import AddIcon from '@mui/icons-material/Add';
 
 export default function HomePage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [shouldFetchWords, setShouldFetchWords] = useState(true);
 
     const handleOpen = () => setIsModalOpen(true);
-    const handleClose = () => setIsModalOpen(false);
+    
+    const handleClose = () => {
+        setIsModalOpen(false);
+        setShouldFetchWords(true);
+    };
+
 
     return (
         <>
@@ -20,14 +26,14 @@ export default function HomePage() {
                 <main className="mx-auto max-w-5xl p-4">
                     <div className="flex justify-end gap-3">
                         <Link to="/quiz">
-                            <button className="px-5 py-2 bg-pink-100 text-pink-600 rounded-md"><QuizIcon /> Realizar quiz</button>
+                            <button className="px-5 py-2 bg-pink-100 text-pink-600 rounded-md"><QuizIcon /> Quiz</button>
                         </Link>
                         <button className="px-5 py-2 bg-blue-100 text-blue-800 rounded-md" onClick={handleOpen}>
                             <AddIcon /> New Word
                         </button>
                     </div>
                     <div className="mt-5">
-                        <WordList />
+                        <WordList shouldFetchWords={shouldFetchWords} setShouldFetchWords={setShouldFetchWords} />
                     </div>
 
                     <Outlet />
