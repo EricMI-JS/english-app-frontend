@@ -9,7 +9,7 @@ interface QuestionCardProps {
 export function QuestionCard({ question, selectedAnswer, onSelectAnswer}: QuestionCardProps) {
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-semibold text-gray-800">{question.text}</h2>
+      <h2 className="text-xl font-semibold text-gray-800 capitalize">{question.text}</h2>
       <div className="space-y-2">
         {question.options.map((option, index) => {
           let buttonClasses = 'w-full p-4 text-left rounded-lg transition ';

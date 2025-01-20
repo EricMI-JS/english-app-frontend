@@ -88,58 +88,60 @@ export default function QuizPage() {
 
     return (
         isLoadingQuestions ? <h1>Cargando...</h1> : (
-            <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-                <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-2xl">
-                    <div className="flex items-center gap-3 mb-6">
-                        <BrainCircuit className="w-6 h-6 text-indigo-600" />
-                        <h1 className="text-2xl font-bold text-gray-800">Quiz Time</h1>
-                    </div>
+            <div className="h-[90vh] bg-gray-100 flex justify-center p-4">
+                <div className="rounded-lg w-full flex flex-col justify-between">
+                    <div>
+                        <div className="flex items-center gap-3 mb-6">
+                            <BrainCircuit className="w-6 h-6 text-blue-600" />
+                            <h1 className="text-2xl font-bold text-gray-800">Quiz Time</h1>
+                        </div>
 
-                    <ProgressBar
-                        current={quizState.currentQuestionIndex + 1}
-                        total={questions.length}
-                    />
+                        <ProgressBar
+                            current={quizState.currentQuestionIndex + 1}
+                            total={questions.length}
+                        />
 
-                    <div className="mt-6">
-                        {!quizState.isComplete ? (
-                            <>
-                                <QuestionCard
-                                    question={currentQuestion}
-                                    selectedAnswer={quizState.answers[quizState.currentQuestionIndex]}
-                                    onSelectAnswer={handleAnswer}
+                        <p className='text-blue-700 font-medium mt-3'>Questions {quizState.currentQuestionIndex + 1} of {questions.length}</p>
+
+                        <div className="mt-6">
+                            {!quizState.isComplete ? (
+                                <>
+                                    <QuestionCard
+                                        question={currentQuestion}
+                                        selectedAnswer={quizState.answers[quizState.currentQuestionIndex]}
+                                        onSelectAnswer={handleAnswer}
+                                    />
+
+                                    {/* Mostrar si la respuesta fue correcta o incorrecta */}
+                                    {showAnswerResult && (
+                                        <div className={`mt-4 p-3 rounded ${isCorrectAnswer ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                                            {isCorrectAnswer ? '¡Respuesta correcta!' : 'Respuesta incorrecta.'}
+                                        </div>
+                                    )}
+                                </>
+                            ) : (
+                                <QuizResults
+                                    score={quizState.score}
+                                    totalQuestions={questions.length}
+                                    onRestart={restartQuiz}
                                 />
-
-                                {/* Mostrar si la respuesta fue correcta o incorrecta */}
-                                {showAnswerResult && (
-                                    <div className={`mt-4 p-3 rounded ${isCorrectAnswer ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                                        {isCorrectAnswer ? '¡Respuesta correcta!' : 'Respuesta incorrecta.'}
-                                    </div>
-                                )}
-                            </>
-                        ) : (
-                            <QuizResults
-                                score={quizState.score}
-                                totalQuestions={questions.length}
-                                onRestart={restartQuiz}
-                            />
-                        )}
+                            )}
+                        </div>
                     </div>
-
                     {
                         !quizState.isComplete ? (
                             <div className="mt-6 flex justify-end">
-                                <Button
-                                    variant='contained'
-                                    disabled={!showAnswerResult} // Deshabilitado hasta que se muestre el resultado de la respuesta
-                                    onClick={handleNextQuestion} // Avanzar a la siguiente pregunta
+                                <button
+                                    className='w-full bg-blue-700 p-3 text-white font-semibold rounded-md'
+                                    disabled={!showAnswerResult}
+                                    onClick={handleNextQuestion}
                                 >
                                     Siguiente
-                                </Button>
+                                </button>
                             </div>
                         ) : <></>
 
                     }
-
                 </div>
             </div>
         )
