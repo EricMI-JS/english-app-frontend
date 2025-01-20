@@ -3,7 +3,7 @@ import { Word } from "../../types/quiz";
 import { Autocomplete, Button, TextField } from "@mui/material";
 import { toast } from 'sonner';
 import { useEffect, useRef, useState } from "react";
-import { createWord } from '../../services/words/WordService';
+import { createWord } from '../../services/wordService';
 
 interface WordFormProps {
     handleClose: () => void;

@@ -3,7 +3,7 @@ import { Button, Modal, Typography } from '@mui/material';
 import { toast } from 'sonner';
 import WordForm from './WordForm'; // Asegúrate de importar tu formulario aquí
 import { Word } from '../../types/quiz';
-import { getAllWords } from '../../services/words/WordService';
+import { getAllWords } from '../../services/wordService';
 
 const WordList = () => {
     const [words, setWords] = useState<Word[]>([]);

@@ -6,7 +6,7 @@ import { QuestionCard } from '../../components/quiz/QuestionCard';
 import { QuizResults } from '../../components/quiz/QuizResults';
 import { toast } from 'sonner';
 import { Button } from '@mui/material';
-import { getQuiz } from '../../services/quiz/QuizService';
+import { getQuiz } from '../../services/quizService';
 
 export default function QuizPage() {
     const [questions, setQuestions] = useState<Question[]>([]);

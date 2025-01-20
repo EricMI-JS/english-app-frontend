@@ -1,6 +1,6 @@
-import { Word } from "../../types/quiz";
+import { Word } from "../types/quiz";
 
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 export async function createWord(formData: Word) {
   const response = await fetch(`${BASE_URL}/words`, {
