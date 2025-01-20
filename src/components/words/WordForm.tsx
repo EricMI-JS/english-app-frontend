@@ -3,7 +3,7 @@ import { Word } from "../../types/quiz";
 import { Autocomplete, Button, TextField } from "@mui/material";
 import { toast } from 'sonner';
 import { useEffect, useRef, useState } from "react";
-import { wordService } from '../../services/words/WordService';
+import { createWord } from '../../services/words/WordService';
 
 interface WordFormProps {
     handleClose: () => void;
@@ -73,7 +73,7 @@ export default function WordForm({ handleClose, initialData }: WordFormProps) {
     
     const handleWordForm = async (formData: Word) => {
       try {
-        await wordService.createWord(formData);
+        await createWord(formData);
         toast.success('Palabra guardada exitosamente.');
         handleClose(); // Cerrar el modal
       } catch (error) {

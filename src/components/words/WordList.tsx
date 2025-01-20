@@ -3,6 +3,7 @@ import { Button, Modal, Typography } from '@mui/material';
 import { toast } from 'sonner';
 import WordForm from './WordForm'; // Asegúrate de importar tu formulario aquí
 import { Word } from '../../types/quiz';
+import { getAllWords } from '../../services/words/WordService';
 
 const WordList = () => {
     const [words, setWords] = useState<Word[]>([]);
@@ -12,10 +13,8 @@ const WordList = () => {
     // Función para obtener la lista de palabras
     const fetchWords = async () => {
         try {
-            const response = await fetch('http://localhost:3000/words');
-            if (!response.ok) throw new Error('Error al obtener las palabras');
-            const data = await response.json();
-            setWords(data);
+            const response = await getAllWords();
+            setWords(response);
         } catch (error) {
             console.error('Error fetching words:', error);
             toast.error('Error al cargar la lista de palabras.');
@@ -30,10 +29,7 @@ const WordList = () => {
     // Función para eliminar una palabra
     const deleteWord = async (id: string) => {
         try {
-            const response = await fetch(`http://localhost:3000/words/${id}`, {
-                method: 'DELETE',
-            });
-            if (!response.ok) throw new Error('Error al eliminar la palabra');
+            await deleteWord(id)
             toast.success('Palabra eliminada exitosamente.');
             setWords((prev) => prev.filter((word) => word.id !== id)); // Actualiza la lista localmente
         } catch (error) {

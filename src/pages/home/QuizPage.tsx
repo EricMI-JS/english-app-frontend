@@ -6,6 +6,7 @@ import { QuestionCard } from '../../components/quiz/QuestionCard';
 import { QuizResults } from '../../components/quiz/QuizResults';
 import { toast } from 'sonner';
 import { Button } from '@mui/material';
+import { getQuiz } from '../../services/quiz/QuizService';
 
 export default function QuizPage() {
     const [questions, setQuestions] = useState<Question[]>([]);
@@ -24,9 +25,9 @@ export default function QuizPage() {
     // Función para obtener la lista de preguntas
     const fetchQuestions = async () => {
         try {
-            const response = await fetch('http://localhost:3000/quiz');
-            if (!response.ok) throw new Error('Error al obtener las palabras');
-            const data = await response.json();
+            const data = await getQuiz()
+            console.log('data',data);
+            
             setQuestions(data);
             setIsLoadingQuestions(false);
         } catch (error) {
