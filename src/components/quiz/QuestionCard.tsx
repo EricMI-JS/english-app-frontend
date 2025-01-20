@@ -10,7 +10,7 @@ interface QuestionCardProps {
 export function QuestionCard({ question, selectedAnswer, onSelectAnswer }: QuestionCardProps) {
   return (
     <div className="space-y-4">
-      <div className='flex justify-between'>
+      <div className='flex justify-between items-center'>
         <h2 className="text-xl font-semibold text-gray-800 capitalize">{question.text}</h2>
         <Tooltip title={question.exampleSentence ?? 'Prueba tooltip'}>
           <IconButton>
