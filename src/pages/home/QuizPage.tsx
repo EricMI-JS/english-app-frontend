@@ -26,8 +26,6 @@ export default function QuizPage() {
     const fetchQuestions = async () => {
         try {
             const data = await getQuiz()
-            console.log('data',data);
-            
             setQuestions(data);
             setIsLoadingQuestions(false);
         } catch (error) {
