@@ -34,7 +34,7 @@ const WordList = ({ shouldFetchWords, setShouldFetchWords }: WordListProps) => {
 
     useEffect(() => {
         if (error) {
-            toast.error('Failed to fetch wordst');
+            toast.error('Failed to fetch words');
         }
     }, [error])
 
