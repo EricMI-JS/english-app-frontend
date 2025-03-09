@@ -1,12 +1,11 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { WordsComponent } from './words/words.component';
+import { WordFormComponent } from './words/word-form/word-form.component';
 
 const routes: Routes = [
   { path: 'words', component: WordsComponent },
-  { path: 'dictionary', component: WordsComponent }, // Will be replaced with actual component when created
-  { path: 'statistic', component: WordsComponent },  // Will be replaced with actual component when created
-  { path: 'settings', component: WordsComponent },   // Will be replaced with actual component when created
+  { path: 'words/add', component: WordFormComponent },
   { path: '', redirectTo: '/words', pathMatch: 'full' }
 ];
 

@@ -9,6 +9,7 @@ import { MobileMenuComponent } from './shared/mobile-menu/mobile-menu.component'
 import { HeaderComponent } from './shared/header/header.component';
 import { FabComponent } from './shared/fab/fab.component';
 import { IconsComponent } from './shared/icons/icons.component';
+import { WordFormComponent } from './words/word-form/word-form.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import { IconsComponent } from './shared/icons/icons.component';
     MobileMenuComponent,
     HeaderComponent,
     FabComponent,
-    IconsComponent
+    IconsComponent,
+    WordFormComponent
   ],
   imports: [
     BrowserModule,

@@ -1,15 +1,28 @@
-<div class="flex justify-center items-stretch h-full overflow-y-auto ">
+<div class="flex justify-center items-stretch h-full overflow-y-auto">
   <div class="bg-white w-full max-w-[450px] overflow-hidden shadow-sm flex flex-col">
+    <!-- Words List -->
     <div class="p-5 px-4 flex flex-col gap-4 border-b border-gray-100 flex-1">
-      <div class="flex flex-col gap-3">
-        <div class="flex justify-between items-center py-3 border-b border-gray-100 flex-1 gap-3">
+      <div class="flex justify-between items-center">
+        <h2 class="text-xl font-semibold">My Words</h2>
+      </div>
+      
+      <div *ngIf="words.length === 0" class="text-center py-8 text-gray-500">
+        No words added yet. Click the + button to add your first word.
+      </div>
+      
+      <div *ngIf="words.length > 0" class="flex flex-col gap-3">
+        <div *ngFor="let word of words" class="flex justify-between items-center py-3 border-b border-gray-100 flex-1 gap-3">
           <div class="flex items-start gap-3 flex-1">
             <button class="bg-transparent border-none p-0 cursor-pointer text-gray-400 mt-0.5 flex-shrink-0 flex items-center justify-center w-6 h-6">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 min-w-5 min-h-5 flex-shrink-0">
                 <polyline points="6 9 12 15 18 9"></polyline>
               </svg>
             </button>
-            <p class="m-0 text-sm leading-normal text-gray-800">Lorem ipsum dolor sit amet consectetur adipisicing elit. Nihil, adipisci!</p>
+            <div>
+              <h3 class="m-0 font-medium">{{ word.word }}</h3>
+              <p class="m-0 text-sm leading-normal text-gray-800">{{ word.definition }}</p>
+              <p *ngIf="word.example" class="m-0 mt-2 text-sm leading-normal text-gray-600 italic">"{{ word.example }}"</p>
+            </div>
           </div>
           <button class="bg-transparent border-none text-gray-400 cursor-pointer p-1">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

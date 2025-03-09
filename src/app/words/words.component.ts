@@ -1,4 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router } from '@angular/router';
+import { WordService, Word } from '../services/word.service';
+import { Subscription } from 'rxjs';
 
 interface Example {
   text: string;
@@ -10,19 +13,31 @@ interface Example {
   templateUrl: './words.component.html',
   styleUrls: ['./words.component.scss']
 })
-export class WordsComponent implements OnInit {
-  constructor() { }
+export class WordsComponent implements OnInit, OnDestroy {
+  words: Word[] = [];
+  private subscription: Subscription | null = null;
+
+  constructor(
+    private router: Router,
+    private wordService: WordService
+  ) { }
 
   ngOnInit(): void {
+    // Subscribe to the words observable to get updates
+    this.subscription = this.wordService.words$.subscribe(words => {
+      this.words = words;
+    });
+  }
+
+  ngOnDestroy(): void {
+    // Clean up subscription when component is destroyed
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
   
   onAddWord(): void {
-    // Handle adding a new word
-    console.log('Add word button clicked');
-    // You can implement your logic here, such as:
-    // - Opening a dialog
-    // - Navigating to a form
-    // - Showing a popup
-    alert('Add new word functionality will be implemented here');
+    // Navigate to the word-form route
+    this.router.navigate(['/words/add']);
   }
 }
