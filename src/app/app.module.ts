@@ -6,12 +6,14 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { WordsComponent } from './words/words.component';
 import { MobileMenuComponent } from './shared/mobile-menu/mobile-menu.component';
+import { HeaderComponent } from './shared/header/header.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     WordsComponent,
-    MobileMenuComponent
+    MobileMenuComponent,
+    HeaderComponent
   ],
   imports: [
     BrowserModule,
