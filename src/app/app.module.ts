@@ -10,6 +10,8 @@ import { HeaderComponent } from './shared/header/header.component';
 import { FabComponent } from './shared/fab/fab.component';
 import { IconsComponent } from './shared/icons/icons.component';
 import { WordFormComponent } from './words/word-form/word-form.component';
+import { QuizComponent } from './quiz/quiz.component';
+import { QuizResultsComponent } from './quiz/quiz-results/quiz-results.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +21,9 @@ import { WordFormComponent } from './words/word-form/word-form.component';
     HeaderComponent,
     FabComponent,
     IconsComponent,
-    WordFormComponent
+    WordFormComponent,
+    QuizComponent,
+    QuizResultsComponent
   ],
   imports: [
     BrowserModule,
