@@ -4,33 +4,19 @@ import { FormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { WordsComponent } from './words/words.component';
-import { MobileMenuComponent } from './shared/mobile-menu/mobile-menu.component';
-import { HeaderComponent } from './shared/header/header.component';
-import { FabComponent } from './shared/fab/fab.component';
-import { IconsComponent } from './shared/icons/icons.component';
-import { WordFormComponent } from './words/word-form/word-form.component';
-import { QuizComponent } from './quiz/quiz.component';
-import { QuizResultsComponent } from './quiz/quiz-results/quiz-results.component';
-import { BackButtonComponent } from './shared/back-button/back-button.component';
+import { SharedModule } from './shared/shared.module';
+import { LayoutModule } from './layout/layout.module';
 
 @NgModule({
   declarations: [
     AppComponent,
-    WordsComponent,
-    MobileMenuComponent,
-    HeaderComponent,
-    FabComponent,
-    IconsComponent,
-    WordFormComponent,
-    QuizComponent,
-    QuizResultsComponent,
-    BackButtonComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    FormsModule
+    FormsModule,
+    SharedModule,
+    LayoutModule
   ],
   providers: [],
   bootstrap: [AppComponent]

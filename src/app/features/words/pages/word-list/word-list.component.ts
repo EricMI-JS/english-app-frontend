@@ -1,9 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { WordService, Word } from '../services/word.service';
 import { Subscription } from 'rxjs';
-import { PageTitleService } from '../services/page-title.service';
-import { NavigationHistoryService } from '../services/navigation-history.service';
+import { WordService, Word } from '../../../../services/word.service';
+import { PageTitleService } from '../../../../services/page-title.service';
+import { NavigationHistoryService } from '../../../../services/navigation-history.service';
 
 interface Example {
   text: string;
@@ -11,11 +11,11 @@ interface Example {
 }
 
 @Component({
-  selector: 'app-words',
-  templateUrl: './words.component.html',
-  styleUrls: ['./words.component.scss']
+  selector: 'app-word-list',
+  templateUrl: './word-list.component.html',
+  styleUrls: ['./word-list.component.scss']
 })
-export class WordsComponent implements OnInit, OnDestroy {
+export class WordListComponent implements OnInit, OnDestroy {
   words: Word[] = [];
   private subscription: Subscription | null = null;
 
@@ -47,4 +47,4 @@ export class WordsComponent implements OnInit, OnDestroy {
     // Navigate to the word-form route
     this.router.navigate(['/words/add']);
   }
-}
+} 

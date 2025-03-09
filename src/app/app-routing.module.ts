@@ -1,14 +1,20 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { WordsComponent } from './words/words.component';
-import { WordFormComponent } from './words/word-form/word-form.component';
-import { QuizComponent } from './quiz/quiz.component';
 
 const routes: Routes = [
-  { path: 'words', component: WordsComponent },
-  { path: 'words/add', component: WordFormComponent },
-  { path: 'quiz', component: QuizComponent },
-  { path: '', redirectTo: '/words', pathMatch: 'full' }
+  { 
+    path: 'words', 
+    loadChildren: () => import('./features/words/words.module').then(m => m.WordsModule)
+  },
+  { 
+    path: 'quiz', 
+    loadChildren: () => import('./features/quiz/quiz.module').then(m => m.QuizModule)
+  },
+  { 
+    path: '', 
+    redirectTo: '/words', 
+    pathMatch: 'full' 
+  }
 ];
 
 @NgModule({

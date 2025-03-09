@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { PageTitleService } from '../services/page-title.service';
-import { NavigationHistoryService } from '../services/navigation-history.service';
+import { PageTitleService } from '../../../../services/page-title.service';
+import { NavigationHistoryService } from '../../../../services/navigation-history.service';
 
 interface QuizQuestion {
   id: number;
@@ -17,7 +17,7 @@ interface QuizOption {
 @Component({
   selector: 'app-quiz',
   templateUrl: './quiz.component.html',
-  styleUrls: []
+  styleUrls: ['./quiz.component.scss']
 })
 export class QuizComponent implements OnInit {
   currentQuestionIndex = 0;
@@ -137,4 +137,4 @@ export class QuizComponent implements OnInit {
       return 'Keep practicing. You\'ll get better with time.';
     }
   }
-}
+} 

@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { WordService, Word } from '../../services/word.service';
-import { PageTitleService } from '../../services/page-title.service';
-import { NavigationHistoryService } from '../../services/navigation-history.service';
+import { WordService, Word } from '../../../../services/word.service';
+import { PageTitleService } from '../../../../services/page-title.service';
+import { NavigationHistoryService } from '../../../../services/navigation-history.service';
 
 interface WordForm {
   word: string;
@@ -66,4 +66,4 @@ export class WordFormComponent implements OnInit {
       example: ''
     };
   }
-}
+} 

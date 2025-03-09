@@ -30,4 +30,4 @@ export class QuizResultsComponent {
   onRestart(): void {
     this.restart.emit();
   }
-}
+} 
