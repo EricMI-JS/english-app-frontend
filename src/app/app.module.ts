@@ -7,13 +7,17 @@ import { AppComponent } from './app.component';
 import { WordsComponent } from './words/words.component';
 import { MobileMenuComponent } from './shared/mobile-menu/mobile-menu.component';
 import { HeaderComponent } from './shared/header/header.component';
+import { FabComponent } from './shared/fab/fab.component';
+import { IconsComponent } from './shared/icons/icons.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     WordsComponent,
     MobileMenuComponent,
-    HeaderComponent
+    HeaderComponent,
+    FabComponent,
+    IconsComponent
   ],
   imports: [
     BrowserModule,

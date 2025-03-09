@@ -1,0 +1,13 @@
+<button 
+  [ngClass]="[
+    'fixed rounded-full shadow-lg flex items-center justify-center transition-all duration-200 z-50 p-4',
+    'w-' + size,
+    'h-' + size,
+    position,
+    color
+  ]"
+  [style.bottom.px]="bottom"
+  [style.right.px]="right"
+  (click)="onClick.emit()">
+  <ng-content></ng-content>
+</button>
