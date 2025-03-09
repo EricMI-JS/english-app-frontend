@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { PageTitleService } from '../services/page-title.service';
+import { NavigationHistoryService } from '../services/navigation-history.service';
 
 interface QuizQuestion {
   id: number;
@@ -57,9 +59,14 @@ export class QuizComponent implements OnInit {
     }
   ];
 
-  constructor() { }
+  constructor(
+    private pageTitleService: PageTitleService,
+    private navigationHistoryService: NavigationHistoryService
+  ) { }
 
   ngOnInit(): void {
+    // Establecer el título de la página
+    this.pageTitleService.setPageTitle('Aptitude Test');
   }
 
   get currentQuestion(): QuizQuestion {

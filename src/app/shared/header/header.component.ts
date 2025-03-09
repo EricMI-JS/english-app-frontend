@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { PageTitleService } from '../../services/page-title.service';
+import { NavigationHistoryService } from '../../services/navigation-history.service';
 
 @Component({
   selector: 'app-header',
@@ -9,10 +11,26 @@ import { filter } from 'rxjs/operators';
 })
 export class HeaderComponent implements OnInit {
   activeTab: string = 'learn'; // Default active tab
+  pageTitle: string = 'English App';
+  canShowBackButton: boolean = false;
 
-  constructor(private router: Router) { }
+  constructor(
+    private router: Router,
+    private pageTitleService: PageTitleService,
+    private navigationHistoryService: NavigationHistoryService
+  ) { }
 
   ngOnInit(): void {
+    // Suscribirse al título de la página
+    this.pageTitleService.getPageTitle().subscribe(title => {
+      this.pageTitle = title;
+    });
+
+    // Suscribirse al observable showBackButton
+    this.navigationHistoryService.showBackButton$().subscribe(showBackButton => {
+      this.canShowBackButton = showBackButton;
+    });
+
     // Update active tab based on current route
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)

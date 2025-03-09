@@ -2,6 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { WordService, Word } from '../services/word.service';
 import { Subscription } from 'rxjs';
+import { PageTitleService } from '../services/page-title.service';
+import { NavigationHistoryService } from '../services/navigation-history.service';
 
 interface Example {
   text: string;
@@ -19,10 +21,15 @@ export class WordsComponent implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
-    private wordService: WordService
+    private wordService: WordService,
+    private pageTitleService: PageTitleService,
+    private navigationHistoryService: NavigationHistoryService
   ) { }
 
   ngOnInit(): void {
+    // Establecer el título de la página
+    this.pageTitleService.setPageTitle('My Words');
+    
     // Subscribe to the words observable to get updates
     this.subscription = this.wordService.words$.subscribe(words => {
       this.words = words;

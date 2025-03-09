@@ -1,15 +1,4 @@
 <div class="max-w-full mx-auto h-[calc(100vh-120px)] flex flex-col bg-white">
-  <!-- Header with back button -->
-  <div class="px-4 py-3 flex items-center justify-between border-b border-gray-200">
-    <a routerLink="/words" class="text-gray-800 cursor-pointer">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M15 18l-6-6 6-6"></path>
-      </svg>
-    </a>
-    <h1 class="text-lg font-semibold">Aptitude Test</h1>
-    <div class="placeholder-div"></div> <!-- Empty div to maintain flex spacing -->
-  </div>
-
   <!-- Progress bar (only show when quiz is not completed) -->
   <div *ngIf="!quizCompleted" class="h-1 bg-purple-600 transition-all duration-300 ease-in-out" [style.width.%]="(currentQuestionIndex + 1) / totalQuestions * 100"></div>
 

@@ -12,6 +12,7 @@ import { IconsComponent } from './shared/icons/icons.component';
 import { WordFormComponent } from './words/word-form/word-form.component';
 import { QuizComponent } from './quiz/quiz.component';
 import { QuizResultsComponent } from './quiz/quiz-results/quiz-results.component';
+import { BackButtonComponent } from './shared/back-button/back-button.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { QuizResultsComponent } from './quiz/quiz-results/quiz-results.component
     IconsComponent,
     WordFormComponent,
     QuizComponent,
-    QuizResultsComponent
+    QuizResultsComponent,
+    BackButtonComponent
   ],
   imports: [
     BrowserModule,
