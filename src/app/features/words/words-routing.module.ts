@@ -9,7 +9,7 @@ const routes: Routes = [
     component: WordListComponent
   },
   {
-    path: 'new',
+    path: 'add',
     component: WordFormComponent
   },
   {
