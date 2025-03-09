@@ -1,11 +1,11 @@
-<div class="word-container">
-  <div class="word-card">
-    <div class="word-header">
-      <div class="dictionary-info">
-        <span class="dictionary-badge">• Words</span>
-        <span class="dictionary-name">List of words</span>
+<div class="flex justify-center items-stretch min-h-screen p-4">
+  <div class="bg-white rounded-xl w-full max-w-[450px] overflow-hidden shadow-sm flex flex-col">
+    <div class="flex justify-between items-center p-4 border-b border-gray-100">
+      <div class="flex items-center gap-2">
+        <span class="text-green-500 font-semibold">• Words</span>
+        <span class="text-gray-500 text-sm">List of words</span>
       </div>
-      <button class="menu-button">
+      <button class="bg-transparent border-none text-gray-400 cursor-pointer p-1">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="1"></circle>
           <circle cx="12" cy="5" r="1"></circle>
@@ -14,18 +14,18 @@
       </button>
     </div>
     
-    <div class="word-content">
-      <div class="examples-list">
-        <div class="example-item">
-          <div class="example-header">
-            <button class="expand-button">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <div class="p-5 px-4 flex flex-col gap-4 border-b border-gray-100 flex-1">
+      <div class="flex flex-col gap-3">
+        <div class="flex justify-between items-center py-3 border-b border-gray-100 flex-1 gap-3">
+          <div class="flex items-start gap-3 flex-1">
+            <button class="bg-transparent border-none p-0 cursor-pointer text-gray-400 mt-0.5 flex-shrink-0 flex items-center justify-center w-6 h-6">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 min-w-5 min-h-5 flex-shrink-0">
                 <polyline points="6 9 12 15 18 9"></polyline>
               </svg>
             </button>
-            <p class="example-text">Lorem ipsum dolor sit amet consectetur adipisicing elit. Nihil, adipisci!</p>
+            <p class="m-0 text-sm leading-normal text-gray-800">Lorem ipsum dolor sit amet consectetur adipisicing elit. Nihil, adipisci!</p>
           </div>
-          <button class="audio-button">
+          <button class="bg-transparent border-none text-gray-400 cursor-pointer p-1">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
               <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>

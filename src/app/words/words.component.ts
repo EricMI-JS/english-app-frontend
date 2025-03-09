@@ -8,7 +8,7 @@ interface Example {
 @Component({
   selector: 'app-words',
   templateUrl: './words.component.html',
-  styleUrls: ['./words.component.scss']
+  styleUrls: []
 })
 export class WordsComponent implements OnInit {
   constructor() { }
