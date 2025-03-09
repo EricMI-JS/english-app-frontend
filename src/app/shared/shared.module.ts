@@ -5,6 +5,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FabComponent } from './components/fab/fab.component';
 import { IconsComponent } from './components/icons/icons.component';
 import { BackButtonComponent } from './components/back-button/back-button.component';
+import { PrimeNgModule } from './primeng.module';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import { BackButtonComponent } from './components/back-button/back-button.compon
     CommonModule,
     RouterModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    PrimeNgModule
   ],
   exports: [
     // Exporta los módulos que quieres compartir
@@ -24,6 +26,7 @@ import { BackButtonComponent } from './components/back-button/back-button.compon
     RouterModule,
     FormsModule,
     ReactiveFormsModule,
+    PrimeNgModule,
     FabComponent,
     IconsComponent,
     BackButtonComponent
