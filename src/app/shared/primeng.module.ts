@@ -19,6 +19,7 @@ import { PanelModule } from 'primeng/panel';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { MessagesModule } from 'primeng/messages';
 import { MessageModule } from 'primeng/message';
+import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ConfirmationService, MessageService } from 'primeng/api';
 
 @NgModule({
@@ -41,7 +42,8 @@ import { ConfirmationService, MessageService } from 'primeng/api';
     PanelModule,
     ProgressSpinnerModule,
     MessagesModule,
-    MessageModule
+    MessageModule,
+    AutoCompleteModule
   ],
   exports: [
     ButtonModule,
@@ -60,7 +62,8 @@ import { ConfirmationService, MessageService } from 'primeng/api';
     PanelModule,
     ProgressSpinnerModule,
     MessagesModule,
-    MessageModule
+    MessageModule,
+    AutoCompleteModule
   ],
   providers: [
     MessageService,
