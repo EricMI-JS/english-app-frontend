@@ -1,14 +1,24 @@
 <div class="flex justify-center items-stretch h-full overflow-y-auto">
   <div class="bg-white w-full max-w-[450px] overflow-hidden shadow-sm flex flex-col">
+    <!-- Mensaje de carga -->
+    <div *ngIf="isLoading" class="p-5 text-center">
+      <p class="text-gray-600">Cargando palabras...</p>
+    </div>
+    
+    <!-- Mensaje de error -->
+    <div *ngIf="errorMessage" class="p-5 text-center">
+      <p class="text-red-500">{{ errorMessage }}</p>
+    </div>
+    
     <!-- Words List -->
-    <div class="p-5 px-4 flex flex-col gap-4 border-b border-gray-100 flex-1">
+    <div *ngIf="!isLoading" class="p-5 px-4 flex flex-col gap-4 border-b border-gray-100 flex-1">
       
       <div *ngIf="words.length === 0" class="text-center py-8 text-gray-500">
         No words added yet. Click the + button to add your first word.
       </div>
       
       <div *ngIf="words.length > 0" class="flex flex-col gap-3">
-        <div *ngFor="let word of words" class="flex justify-between items-center py-3 border-b border-gray-100 flex-1 gap-3">
+        <div *ngFor="let word of words" class="flex justify-between items-start py-3 border-b border-gray-100 flex-1 gap-3">
           <div class="flex items-start gap-3 flex-1">
             <button class="bg-transparent border-none p-0 cursor-pointer text-gray-400 mt-0.5 flex-shrink-0 flex items-center justify-center w-6 h-6">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 min-w-5 min-h-5 flex-shrink-0">
@@ -18,16 +28,27 @@
             <div>
               <h3 class="m-0 font-medium">{{ word.word }}</h3>
               <p class="m-0 text-sm leading-normal text-gray-800">{{ word.definition }}</p>
-              <p *ngIf="word.example" class="m-0 mt-2 text-sm leading-normal text-gray-600 italic">"{{ word.example }}"</p>
+              <p *ngIf="word.exampleSentence" class="m-0 mt-2 text-sm leading-normal text-gray-600 italic">"{{ word.exampleSentence }}"</p>
             </div>
           </div>
-          <button class="bg-transparent border-none text-gray-400 cursor-pointer p-1">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-              <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-              <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
-            </svg>
-          </button>
+          <div class="flex gap-2">
+            <!-- Botón de editar -->
+            <button (click)="onEditWord(word.id!)" class="bg-transparent border-none text-gray-400 cursor-pointer p-1 hover:text-purple-600">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+            </button>
+            <!-- Botón de eliminar -->
+            <button (click)="onDeleteWord(word.id!)" class="bg-transparent border-none text-gray-400 cursor-pointer p-1 hover:text-red-600">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                <line x1="10" y1="11" x2="10" y2="17"></line>
+                <line x1="14" y1="11" x2="14" y2="17"></line>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
     </div>

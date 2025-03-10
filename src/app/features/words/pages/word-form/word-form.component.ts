@@ -1,8 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { PageTitleService } from '../../../../services/page-title.service';
 import { DatamuseService } from '../../../../services/datamuse.service';
+import { WordService, Word } from '../../../../services/word.service';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-word-form',
@@ -13,28 +15,65 @@ export class WordFormComponent implements OnInit, OnDestroy {
   wordSuggestions: string[] = [];
   wordForm!: FormGroup;
   private subscriptions: Subscription = new Subscription();
+  isEditMode = false;
+  wordId: string | null = null;
   
   constructor(
     private pageTitleService: PageTitleService,
     private datamuseService: DatamuseService,
-    private fb: FormBuilder
+    private wordService: WordService,
+    private fb: FormBuilder,
+    private route: ActivatedRoute,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
-    // Establecer el título de la página
-    this.pageTitleService.setPageTitle('Add New Word');
-    
     // Inicializar el formulario
     this.wordForm = this.fb.group({
       word: ['', Validators.required],
       definition: ['', Validators.required],
-      example: ['']
+      exampleSentence: ['']
+    });
+    
+    // Verificar si estamos en modo edición
+    this.route.paramMap.subscribe(params => {
+      this.wordId = params.get('id');
+      
+      if (this.wordId) {
+        this.isEditMode = true;
+        this.pageTitleService.setPageTitle('Edit Word');
+        this.loadWordData(this.wordId);
+      } else {
+        this.isEditMode = false;
+        this.pageTitleService.setPageTitle('Add New Word');
+      }
     });
   }
 
   ngOnDestroy(): void {
     // Cancelar todas las suscripciones para evitar memory leaks
     this.subscriptions.unsubscribe();
+  }
+
+  /**
+   * Carga los datos de una palabra existente para edición
+   */
+  loadWordData(id: string): void {
+    const subscription = this.wordService.getWordById(id).subscribe({
+      next: (word: Word) => {
+        this.wordForm.patchValue({
+          word: word.word,
+          definition: word.definition,
+          exampleSentence: word.exampleSentence
+        });
+      },
+      error: (error) => {
+        console.error('Error al cargar la palabra:', error);
+        this.router.navigate(['/words']);
+      }
+    });
+    
+    this.subscriptions.add(subscription);
   }
 
   /**
@@ -99,8 +138,39 @@ export class WordFormComponent implements OnInit, OnDestroy {
 
   onSubmit(): void {
     if (this.wordForm.valid) {
-      console.log('Form submitted:', this.wordForm.value);
-      // Aquí iría la lógica para guardar el formulario
+      const wordData: Word = {
+        word: this.wordForm.value.word,
+        definition: this.wordForm.value.definition,
+        exampleSentence: this.wordForm.value.exampleSentence
+      };
+
+      let subscription;
+      
+      if (this.isEditMode && this.wordId) {
+        // Actualizar palabra existente
+        subscription = this.wordService.updateWord(this.wordId, wordData).subscribe({
+          next: () => {
+            this.router.navigate(['/words']);
+          },
+          error: (error) => {
+            console.error('Error al actualizar la palabra:', error);
+          }
+        });
+      } else {
+        // Crear nueva palabra
+        subscription = this.wordService.addWord(wordData).subscribe({
+          next: () => {
+            this.router.navigate(['/words']);
+          },
+          error: (error) => {
+            console.error('Error al guardar la palabra:', error);
+          }
+        });
+      }
+      
+      if (subscription) {
+        this.subscriptions.add(subscription);
+      }
     } else {
       // Marcar todos los campos como touched para mostrar errores
       Object.keys(this.wordForm.controls).forEach(key => {

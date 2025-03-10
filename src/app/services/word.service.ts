@@ -1,62 +1,114 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable, tap, catchError, throwError } from 'rxjs';
 
 export interface Word {
+  id?: string;
   word: string;
   definition: string;
-  example: string;
+  exampleSentence: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class WordService {
+  private apiUrl = 'http://localhost:3000/api/words';
+  
   // BehaviorSubject para mantener el estado de las palabras
   private wordsSubject = new BehaviorSubject<Word[]>([]);
   
   // Observable público que los componentes pueden suscribirse
   public words$: Observable<Word[]> = this.wordsSubject.asObservable();
 
-  constructor() { 
-    // Inicializar con datos de ejemplo o cargar desde localStorage
+  constructor(private http: HttpClient) { 
+    // Cargar palabras al inicializar el servicio
     this.loadWords();
   }
 
-  // Método para cargar palabras (desde localStorage o inicialmente vacío)
-  private loadWords(): void {
-    const savedWords = localStorage.getItem('words');
-    if (savedWords) {
-      this.wordsSubject.next(JSON.parse(savedWords));
-    }
+  // Método para cargar todas las palabras desde la API
+  loadWords(): void {
+    this.http.get<Word[]>(this.apiUrl)
+      .pipe(
+        catchError(this.handleError)
+      )
+      .subscribe(words => {
+        this.wordsSubject.next(words);
+      });
+  }
+
+  // Método para obtener todas las palabras
+  getAllWords(): Observable<Word[]> {
+    return this.http.get<Word[]>(this.apiUrl)
+      .pipe(
+        tap(words => this.wordsSubject.next(words)),
+        catchError(this.handleError)
+      );
+  }
+
+  // Método para buscar palabras
+  searchWords(query: string): Observable<Word[]> {
+    return this.http.get<Word[]>(`${this.apiUrl}/search?q=${query}`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  // Método para obtener una palabra por su ID
+  getWordById(id: string): Observable<Word> {
+    return this.http.get<Word>(`${this.apiUrl}/${id}`)
+      .pipe(
+        catchError(this.handleError)
+      );
   }
 
   // Método para agregar una nueva palabra
-  addWord(word: Word): void {
-    const currentWords = this.wordsSubject.value;
-    const updatedWords = [...currentWords, word];
-    this.wordsSubject.next(updatedWords);
-    this.saveWords(updatedWords);
+  addWord(word: Word): Observable<Word> {
+    return this.http.post<Word>(this.apiUrl, word)
+      .pipe(
+        tap(newWord => {
+          const currentWords = this.wordsSubject.value;
+          this.wordsSubject.next([...currentWords, newWord]);
+        }),
+        catchError(this.handleError)
+      );
   }
 
   // Método para eliminar una palabra
-  deleteWord(index: number): void {
-    const currentWords = this.wordsSubject.value;
-    const updatedWords = currentWords.filter((_, i) => i !== index);
-    this.wordsSubject.next(updatedWords);
-    this.saveWords(updatedWords);
+  deleteWord(id: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`)
+      .pipe(
+        tap(() => {
+          const currentWords = this.wordsSubject.value;
+          const updatedWords = currentWords.filter(word => word.id !== id);
+          this.wordsSubject.next(updatedWords);
+        }),
+        catchError(this.handleError)
+      );
   }
 
   // Método para actualizar una palabra existente
-  updateWord(index: number, updatedWord: Word): void {
-    const currentWords = this.wordsSubject.value;
-    const updatedWords = [...currentWords];
-    updatedWords[index] = updatedWord;
-    this.wordsSubject.next(updatedWords);
-    this.saveWords(updatedWords);
+  updateWord(id: string, updatedWord: Word): Observable<Word> {
+    return this.http.put<Word>(`${this.apiUrl}/${id}`, updatedWord)
+      .pipe(
+        tap(word => {
+          const currentWords = this.wordsSubject.value;
+          const index = currentWords.findIndex(w => w.id === id);
+          if (index !== -1) {
+            const updatedWords = [...currentWords];
+            updatedWords[index] = word;
+            this.wordsSubject.next(updatedWords);
+          }
+        }),
+        catchError(this.handleError)
+      );
   }
 
-  // Método para guardar palabras en localStorage
-  private saveWords(words: Word[]): void {
-    localStorage.setItem('words', JSON.stringify(words));
+  // Manejador de errores
+  private handleError(error: any) {
+    console.error('Error en la operación de API:', error);
+    return throwError(() => error);
   }
 }
