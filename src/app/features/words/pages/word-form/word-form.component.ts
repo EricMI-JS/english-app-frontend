@@ -1,109 +1,111 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { WordService, Word } from '../../../../services/word.service';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { PageTitleService } from '../../../../services/page-title.service';
-import { NavigationHistoryService } from '../../../../services/navigation-history.service';
-
-interface WordForm {
-  word: string;
-  definition: string;
-  example: string;
-}
+import { DatamuseService } from '../../../../services/datamuse.service';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-word-form',
   templateUrl: './word-form.component.html',
   styleUrls: ['./word-form.component.scss']
 })
-export class WordFormComponent implements OnInit {
-  wordForm: Word = {
-    word: '',
-    definition: '',
-    example: ''
-  };
-
-  // Sugerencias para autocompletado
+export class WordFormComponent implements OnInit, OnDestroy {
   wordSuggestions: string[] = [];
-  definitionSuggestions: string[] = [];
-
-  // Datos de ejemplo para autocompletado
-  commonWords: string[] = [
-    'abandon', 'ability', 'able', 'about', 'above', 'accept', 'according', 'account', 'across', 'act',
-    'action', 'activity', 'actually', 'add', 'address', 'administration', 'admit', 'adult', 'affect', 'after',
-    'again', 'against', 'age', 'agency', 'agent', 'ago', 'agree', 'agreement', 'ahead', 'air'
-  ];
-
-  commonDefinitions: string[] = [
-    'the ability to do something or act in a particular way',
-    'a statement that explains the meaning of a word or phrase',
-    'a person who is studying at a school, college, or university',
-    'a process of finding the value of something',
-    'the state of being away from a place or person',
-    'a feeling of expectation and desire for a certain thing to happen',
-    'a view or judgment formed about something, not necessarily based on fact or knowledge',
-    'a person who takes part in an action or process',
-    'the power or right to give orders, make decisions, and enforce obedience',
-    'the regard that something is held to deserve; the importance, worth, or usefulness of something'
-  ];
-
+  wordForm!: FormGroup;
+  private subscriptions: Subscription = new Subscription();
+  
   constructor(
-    private router: Router,
-    private wordService: WordService,
     private pageTitleService: PageTitleService,
-    private navigationHistoryService: NavigationHistoryService
+    private datamuseService: DatamuseService,
+    private fb: FormBuilder
   ) { }
 
   ngOnInit(): void {
     // Establecer el título de la página
     this.pageTitleService.setPageTitle('Add New Word');
+    
+    // Inicializar el formulario
+    this.wordForm = this.fb.group({
+      word: ['', Validators.required],
+      definition: ['', Validators.required],
+      example: ['']
+    });
+  }
+
+  ngOnDestroy(): void {
+    // Cancelar todas las suscripciones para evitar memory leaks
+    this.subscriptions.unsubscribe();
+  }
+
+  /**
+   * Método para buscar sugerencias de palabras
+   * @param event Evento del autocompletado que contiene el término de búsqueda
+   */
+  searchWords(event: any): void {
+    const query = event.query;
+    const subscription = this.datamuseService.searchWordsByPrefix(query).subscribe({
+      next: (words: string[]) => {
+        this.wordSuggestions = words;
+      },
+      error: (error) => {
+        console.error('Error fetching word suggestions:', error);
+        this.wordSuggestions = [];
+      }
+    });
+    
+    this.subscriptions.add(subscription);
+  }
+
+  /**
+   * Método que se ejecuta cuando se selecciona una palabra del autocompletado
+   * @param word La palabra seleccionada
+   */
+  onWordSelect(word: string): void {
+    // Buscar la definición de la palabra seleccionada
+    const subscription = this.datamuseService.getWordDefinition(word).subscribe({
+      next: (definition: string) => {
+        if (definition) {
+          // Establecer la definición en el formulario
+          this.wordForm.get('definition')?.setValue(definition);
+        }
+      },
+      error: (error) => {
+        console.error('Error fetching definition:', error);
+      }
+    });
+    this.subscriptions.add(subscription);
+  }
+  
+  /**
+   * Método para obtener sugerencias de definiciones para la palabra actual
+   */
+  getDefinitionSuggestions(): void {
+    const wordValue = this.wordForm.get('word')?.value;
+    
+    if (wordValue && wordValue.trim()) {
+      const subscription = this.datamuseService.getWordDefinition(wordValue).subscribe({
+        next: (definition: string) => {
+          if (definition) {
+            this.wordForm.get('definition')?.setValue(definition);
+          }
+        },
+        error: (error) => {
+          console.error('Error fetching definition:', error);
+        }
+      });
+      this.subscriptions.add(subscription);
+    }
   }
 
   onSubmit(): void {
-    if (this.isFormValid()) {
-      // Add the word using the service
-      this.wordService.addWord({...this.wordForm});
-      
-      // Navigate back to words list
-      this.router.navigate(['/words']);
-      
-      this.resetForm();
+    if (this.wordForm.valid) {
+      console.log('Form submitted:', this.wordForm.value);
+      // Aquí iría la lógica para guardar el formulario
+    } else {
+      // Marcar todos los campos como touched para mostrar errores
+      Object.keys(this.wordForm.controls).forEach(key => {
+        this.wordForm.get(key)?.markAsTouched();
+      });
     }
-  }
-
-  onCancel(): void {
-    // Usar el servicio de historial de navegación para volver atrás
-    if (!this.navigationHistoryService.goBack()) {
-      // Si no hay historial, volver a la página de palabras
-      this.router.navigate(['/words']);
-    }
-  }
-
-  // Método para filtrar sugerencias de palabras
-  filterWords(event: any) {
-    const query = event.query.toLowerCase();
-    this.wordSuggestions = this.commonWords.filter(word => 
-      word.toLowerCase().includes(query)
-    );
-  }
-
-  // Método para filtrar sugerencias de definiciones
-  filterDefinitions(event: any) {
-    const query = event.query.toLowerCase();
-    this.definitionSuggestions = this.commonDefinitions.filter(definition => 
-      definition.toLowerCase().includes(query)
-    );
-  }
-
-  private isFormValid(): boolean {
-    return !!this.wordForm.word.trim() && 
-           !!this.wordForm.definition.trim();
-  }
-
-  private resetForm(): void {
-    this.wordForm = {
-      word: '',
-      definition: '',
-      example: ''
-    };
   }
 } 

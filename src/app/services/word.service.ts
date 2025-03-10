@@ -11,42 +11,52 @@ export interface Word {
   providedIn: 'root'
 })
 export class WordService {
+  // BehaviorSubject para mantener el estado de las palabras
   private wordsSubject = new BehaviorSubject<Word[]>([]);
-  words$: Observable<Word[]> = this.wordsSubject.asObservable();
+  
+  // Observable público que los componentes pueden suscribirse
+  public words$: Observable<Word[]> = this.wordsSubject.asObservable();
 
   constructor() { 
-    // Initialize with any saved words (could be from localStorage or a backend)
+    // Inicializar con datos de ejemplo o cargar desde localStorage
     this.loadWords();
   }
 
-  getWords(): Word[] {
-    return this.wordsSubject.getValue();
-  }
-
-  addWord(word: Word): void {
-    const currentWords = this.wordsSubject.getValue();
-    this.wordsSubject.next([...currentWords, word]);
-    
-    // Save words (could be to localStorage or a backend)
-    this.saveWords();
-  }
-
+  // Método para cargar palabras (desde localStorage o inicialmente vacío)
   private loadWords(): void {
-    // For now, we'll use localStorage. In a real app, this might be an API call
     const savedWords = localStorage.getItem('words');
     if (savedWords) {
-      try {
-        const words = JSON.parse(savedWords);
-        this.wordsSubject.next(words);
-      } catch (e) {
-        console.error('Error loading words from storage', e);
-      }
+      this.wordsSubject.next(JSON.parse(savedWords));
     }
   }
 
-  private saveWords(): void {
-    // For now, we'll use localStorage. In a real app, this might be an API call
-    const currentWords = this.wordsSubject.getValue();
-    localStorage.setItem('words', JSON.stringify(currentWords));
+  // Método para agregar una nueva palabra
+  addWord(word: Word): void {
+    const currentWords = this.wordsSubject.value;
+    const updatedWords = [...currentWords, word];
+    this.wordsSubject.next(updatedWords);
+    this.saveWords(updatedWords);
+  }
+
+  // Método para eliminar una palabra
+  deleteWord(index: number): void {
+    const currentWords = this.wordsSubject.value;
+    const updatedWords = currentWords.filter((_, i) => i !== index);
+    this.wordsSubject.next(updatedWords);
+    this.saveWords(updatedWords);
+  }
+
+  // Método para actualizar una palabra existente
+  updateWord(index: number, updatedWord: Word): void {
+    const currentWords = this.wordsSubject.value;
+    const updatedWords = [...currentWords];
+    updatedWords[index] = updatedWord;
+    this.wordsSubject.next(updatedWords);
+    this.saveWords(updatedWords);
+  }
+
+  // Método para guardar palabras en localStorage
+  private saveWords(words: Word[]): void {
+    localStorage.setItem('words', JSON.stringify(words));
   }
 }
