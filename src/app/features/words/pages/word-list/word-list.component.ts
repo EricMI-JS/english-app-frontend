@@ -6,9 +6,8 @@ import { PageTitleService } from '../../../../services/page-title.service';
 import { NavigationHistoryService } from '../../../../services/navigation-history.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
 
-interface Example {
-  text: string;
-  expanded: boolean;
+interface WordWithExpanded extends Word {
+  expanded?: boolean;
 }
 
 @Component({
@@ -17,8 +16,8 @@ interface Example {
   styleUrls: ['./word-list.component.scss']
 })
 export class WordListComponent implements OnInit, OnDestroy {
-  words: Word[] = [];
-  filteredWords: Word[] = [];
+  words: WordWithExpanded[] = [];
+  filteredWords: WordWithExpanded[] = [];
   private subscription: Subscription | null = null;
   isLoading = false;
   errorMessage = '';
@@ -54,8 +53,11 @@ export class WordListComponent implements OnInit, OnDestroy {
     
     this.subscription = this.wordService.getAllWords().subscribe({
       next: (words) => {
-        this.words = words;
-        this.filteredWords = words;
+        this.words = words.map(word => ({
+          ...word,
+          expanded: false
+        }));
+        this.filteredWords = this.words;
         this.isLoading = false;
       },
       error: (error) => {
@@ -69,6 +71,14 @@ export class WordListComponent implements OnInit, OnDestroy {
         });
       }
     });
+  }
+  
+  /**
+   * Alterna el estado de expansión de una palabra
+   * @param word La palabra a expandir/colapsar
+   */
+  toggleWordExpansion(word: WordWithExpanded): void {
+    word.expanded = !word.expanded;
   }
   
   onSearch(term: string): void {

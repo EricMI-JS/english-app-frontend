@@ -2,7 +2,7 @@
   <div class="w-full max-w-md mx-auto bg-white rounded-lg overflow-hidden">
     <div class="p-6 text-center">
       <div class="mb-4">
-        <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-purple-100 text-purple-600 mb-4">
+        <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-blue-100 text-blue-600 mb-4">
           <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
             <polyline points="22 4 12 14.01 9 11.01"></polyline>
@@ -12,16 +12,16 @@
       </div>
       
       <div class="mb-6">
-        <div class="text-5xl font-bold text-purple-600 mb-2">{{ getScorePercentage() }}%</div>
+        <div class="text-5xl font-bold text-blue-600 mb-2">{{ getScorePercentage() }}%</div>
         <p class="text-gray-600">You got {{ score }} out of {{ totalQuestions }} questions correct</p>
         <p class="mt-2 text-gray-700">{{ getScoreMessage() }}</p>
       </div>
       
       <div class="space-y-3">
-        <a routerLink="/words" class="block w-full py-3 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 transition-colors duration-200">
+        <a routerLink="/words" class="block w-full py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors duration-200">
           Back to Words List
         </a>
-        <button (click)="onRestart()" class="block w-full py-3 bg-white text-purple-600 border border-purple-600 rounded-lg font-medium hover:bg-purple-50 transition-colors duration-200">
+        <button (click)="onRestart()" class="block w-full py-3 bg-white text-blue-600 border border-blue-600 rounded-lg font-medium hover:bg-blue-50 transition-colors duration-200">
           Restart Quiz
         </button>
       </div>

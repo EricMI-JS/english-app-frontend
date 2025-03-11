@@ -36,36 +36,58 @@
       </div>
       
       <div *ngIf="filteredWords.length > 0" class="flex flex-col gap-3">
-        <div *ngFor="let word of filteredWords" class="flex justify-between items-start py-3 border-b border-gray-100 flex-1 gap-3">
-          <div class="flex items-start gap-3 flex-1">
-            <button class="bg-transparent border-none p-0 cursor-pointer text-gray-400 mt-0.5 flex-shrink-0 flex items-center justify-center w-6 h-6">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 min-w-5 min-h-5 flex-shrink-0">
-                <polyline points="6 9 12 15 18 9"></polyline>
-              </svg>
-            </button>
-            <div>
-              <h3 class="m-0 font-medium">{{ word.word }}</h3>
-              <p class="m-0 text-sm leading-normal text-gray-800">{{ word.definition }}</p>
-              <p *ngIf="word.exampleSentence" class="m-0 mt-2 text-sm leading-normal text-gray-600 italic">"{{ word.exampleSentence }}"</p>
+        <div *ngFor="let word of filteredWords" class="flex flex-col border-b border-gray-100 py-3">
+          <div class="flex justify-between items-start flex-1 gap-3">
+            <div class="flex items-start gap-3 flex-1">
+              <button class="bg-transparent border-none p-0 cursor-pointer text-gray-400 mt-0.5 flex-shrink-0 flex items-center justify-center w-6 h-6 transition-transform duration-300 ease-in-out"
+                      (click)="toggleWordExpansion(word)"
+                      [ngClass]="{'transform rotate-180': word.expanded}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 min-w-5 min-h-5 flex-shrink-0">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </button>
+              <div>
+                <h3 class="m-0 font-medium">{{ word.word }}</h3>
+                <p class="m-0 text-sm leading-normal text-gray-800">{{ word.definition }}</p>
+              </div>
+            </div>
+            <div class="flex gap-2">
+              <!-- Botón de editar -->
+              <button (click)="onEditWord(word.id!)" class="bg-transparent border-none text-gray-400 cursor-pointer p-1 hover:text-blue-600 transition-colors duration-200">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+              </button>
+              <!-- Botón de eliminar -->
+              <button (click)="onDeleteWord(word.id!)" class="bg-transparent border-none text-gray-400 cursor-pointer p-1 hover:text-red-600 transition-colors duration-200">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  <line x1="10" y1="11" x2="10" y2="17"></line>
+                  <line x1="14" y1="11" x2="14" y2="17"></line>
+                </svg>
+              </button>
             </div>
           </div>
-          <div class="flex gap-2">
-            <!-- Botón de editar -->
-            <button (click)="onEditWord(word.id!)" class="bg-transparent border-none text-gray-400 cursor-pointer p-1 hover:text-purple-600">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-              </svg>
-            </button>
-            <!-- Botón de eliminar -->
-            <button (click)="onDeleteWord(word.id!)" class="bg-transparent border-none text-gray-400 cursor-pointer p-1 hover:text-red-600">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="3 6 5 6 21 6"></polyline>
-                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                <line x1="10" y1="11" x2="10" y2="17"></line>
-                <line x1="14" y1="11" x2="14" y2="17"></line>
-              </svg>
-            </button>
+          
+          <!-- Expanded content with animation -->
+          <div class="overflow-hidden transition-all duration-300 ease-in-out"
+               [ngStyle]="{'max-height': word.expanded ? '500px' : '0', 'opacity': word.expanded ? '1' : '0'}">
+            <div class="mt-2 ml-9 pl-3 border-l-2 border-gray-200">
+              <div *ngIf="word.exampleSentence" class="text-sm text-gray-700">
+                <span class="font-medium">Example:</span> <span class="italic">"{{ word.exampleSentence }}"</span>
+              </div>
+              <div *ngIf="!word.exampleSentence" class="text-sm text-gray-500 italic">
+                No example available for this word.
+              </div>
+              <div class="mt-2 text-xs text-gray-500">
+                <span *ngIf="word.createdAt">Added: {{ word.createdAt | date:'medium' }}</span>
+                <span *ngIf="word.updatedAt && word.updatedAt !== word.createdAt" class="ml-2">
+                  Updated: {{ word.updatedAt | date:'medium' }}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -6,7 +6,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   styles: []
 })
 export class FabComponent {
-  @Input() color: string = 'bg-purple-600 text-white';
+  @Input() color: string = 'bg-blue-600 text-white';
   @Input() size: string = '14';
   @Input() position: string = 'bottom-right';
   @Input() bottom: number = 80; // Default position above mobile menu

@@ -15,7 +15,7 @@
     <!-- Loading words state -->
     <div *ngIf="isLoadingWords" class="flex-1 flex items-center justify-center">
       <div class="text-center">
-        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mb-4"></div>
+        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
         <p class="text-gray-600">Loading words...</p>
       </div>
     </div>
@@ -35,6 +35,7 @@
               <th style="width: 3rem">
                 <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
               </th>
+              <th style="width: 3rem"></th>
               <th>Word</th>
               <th>Definition</th>
             </tr>
@@ -44,8 +45,30 @@
               <td>
                 <p-tableCheckbox [value]="word"></p-tableCheckbox>
               </td>
+              <td>
+                <button class="bg-transparent border-none p-0 cursor-pointer text-gray-400 flex-shrink-0 flex items-center justify-center w-6 h-6 transition-transform duration-300 ease-in-out"
+                        (click)="toggleWordExpansion(word, $event)"
+                        [ngClass]="{'transform rotate-180': word.expanded}">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 min-w-5 min-h-5 flex-shrink-0">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </button>
+              </td>
               <td>{{ word.word }}</td>
               <td>{{ word.definition }}</td>
+            </tr>
+            <tr *ngIf="word.expanded">
+              <td colspan="4" class="p-0">
+                <div class="p-3 bg-gray-50 border-t border-gray-200 transition-all duration-300 ease-in-out" 
+                     [ngClass]="{'opacity-100': word.expanded, 'opacity-0': !word.expanded}">
+                  <div *ngIf="word.exampleSentence" class="text-sm text-gray-700">
+                    <span class="font-medium">Example:</span> "{{ word.exampleSentence }}"
+                  </div>
+                  <div *ngIf="!word.exampleSentence" class="text-sm text-gray-500 italic">
+                    No example available for this word.
+                  </div>
+                </div>
+              </td>
             </tr>
           </ng-template>
         </p-table>
@@ -60,7 +83,7 @@
           <span *ngIf="selectedWords.length < 4" class="text-red-500 ml-2">(minimum 4 required)</span>
         </div>
         <button (click)="startQuiz()" 
-                class="px-4 py-2 bg-purple-600 text-white rounded-lg font-medium transition-colors duration-200 hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                class="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium transition-colors duration-200 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
                 [disabled]="selectedWords.length < 4">
           Start Quiz
         </button>
@@ -71,7 +94,7 @@
   <!-- Loading state -->
   <div *ngIf="isLoading" class="flex-1 flex items-center justify-center">
     <div class="text-center">
-      <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mb-4"></div>
+      <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
       <p class="text-gray-600">Loading questions...</p>
     </div>
   </div>
@@ -87,7 +110,7 @@
         </svg>
       </div>
       <p class="text-lg font-medium text-gray-800 mb-2">{{ error }}</p>
-      <button (click)="loadQuizQuestions()" class="mt-4 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+      <button (click)="loadQuizQuestions()" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
         Try again
       </button>
     </div>
@@ -96,7 +119,7 @@
   <!-- Quiz content (only show when quiz is not completed and data is loaded) -->
   <ng-container *ngIf="!isLoading && !error && questions.length > 0 && !wordSelectionVisible">
     <!-- Progress bar (only show when quiz is not completed) -->
-    <div *ngIf="!quizCompleted" class="h-1 bg-purple-600 transition-all duration-300 ease-in-out" [style.width.%]="(currentQuestionIndex + 1) / totalQuestions * 100"></div>
+    <div *ngIf="!quizCompleted" class="h-1 bg-blue-600 transition-all duration-300 ease-in-out" [style.width.%]="(currentQuestionIndex + 1) / totalQuestions * 100"></div>
 
     <!-- Quiz content (only show when quiz is not completed) -->
     <div *ngIf="!quizCompleted" class="flex-1 p-4 flex flex-col">
@@ -116,7 +139,7 @@
              (click)="!answerSubmitted && selectOption(option.id)"
              class="flex items-center p-3 border rounded-lg transition-all duration-200"
              [ngClass]="{
-               'border-purple-600 bg-purple-50': isOptionSelected(option.id),
+               'border-blue-600 bg-blue-50': isOptionSelected(option.id),
                'border-gray-200 hover:border-gray-300 hover:bg-gray-50': !isOptionSelected(option.id) && !answerSubmitted,
                'border-green-600 bg-green-50': answerSubmitted && option.id === currentQuestion.correctOptionId,
                'border-red-600 bg-red-50': answerSubmitted && isOptionSelected(option.id) && option.id !== currentQuestion.correctOptionId,
@@ -126,7 +149,7 @@
           <div class="flex-1">{{ option.text }}</div>
           
           <!-- Selected indicator (when not submitted) -->
-          <div *ngIf="isOptionSelected(option.id) && !answerSubmitted" class="ml-2 w-6 h-6 rounded-full bg-purple-600 flex items-center justify-center text-white">
+          <div *ngIf="isOptionSelected(option.id) && !answerSubmitted" class="ml-2 w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-white">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="20 6 9 17 4 12"></polyline>
             </svg>
@@ -153,7 +176,7 @@
       </div>
       
       <!-- Feedback message when answer is submitted -->
-      <div *ngIf="answerSubmitted" class="mt-4 p-3 rounded-lg" 
+      <div *ngIf="answerSubmitted" class="mt-4 p-3 rounded-lg transition-opacity duration-300 ease-in-out" 
            [ngClass]="{
              'bg-green-50 text-green-800': isCorrectOption(selectedOptionId!),
              'bg-red-50 text-red-800': !isCorrectOption(selectedOptionId!)
@@ -192,7 +215,7 @@
   <div *ngIf="!isLoading && !error && questions.length === 0 && !wordSelectionVisible" class="flex-1 flex items-center justify-center p-4">
     <div class="text-center">
       <p class="text-lg font-medium text-gray-800 mb-2">No questions available</p>
-      <button (click)="restartQuiz()" class="mt-4 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+      <button (click)="restartQuiz()" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
         Back to Word Selection
       </button>
     </div>

@@ -7,6 +7,10 @@ import { MessageService, ConfirmationService } from 'primeng/api';
 import { WordService, Word } from '../../../words/services/word.service';
 import { Subscription } from 'rxjs';
 
+interface WordWithExpanded extends Word {
+  expanded?: boolean;
+}
+
 @Component({
   selector: 'app-quiz',
   templateUrl: './quiz.component.html',
@@ -25,8 +29,8 @@ export class QuizComponent implements OnInit, OnDestroy {
   
   // Variables para la selección de palabras
   showWordSelection = true;
-  availableWords: Word[] = [];
-  selectedWords: Word[] = [];
+  availableWords: WordWithExpanded[] = [];
+  selectedWords: WordWithExpanded[] = [];
   wordSelectionVisible = true;
   isLoadingWords = false;
   
@@ -58,7 +62,10 @@ export class QuizComponent implements OnInit, OnDestroy {
     
     const subscription = this.wordService.getAllWords().subscribe({
       next: (words) => {
-        this.availableWords = words;
+        this.availableWords = words.map(word => ({
+          ...word,
+          expanded: false
+        }));
         this.isLoadingWords = false;
       },
       error: (err) => {
@@ -73,6 +80,15 @@ export class QuizComponent implements OnInit, OnDestroy {
     });
     
     this.subscriptions.add(subscription);
+  }
+  
+  /**
+   * Alterna el estado de expansión de una palabra
+   * @param word La palabra a expandir/colapsar
+   */
+  toggleWordExpansion(word: WordWithExpanded, event: Event): void {
+    event.stopPropagation(); // Evitar que se seleccione/deseleccione la fila
+    word.expanded = !word.expanded;
   }
   
   /**
