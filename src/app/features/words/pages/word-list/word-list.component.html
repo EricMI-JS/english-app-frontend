@@ -6,9 +6,17 @@
   <p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
   
   <div class="bg-white w-full max-w-[450px] overflow-hidden shadow-sm flex flex-col">
+    <!-- Search Bar -->
+    <div class="p-4 border-b border-gray-100">
+      <app-search-bar 
+        placeholder="Search words..." 
+        (search)="onSearch($event)"
+      ></app-search-bar>
+    </div>
+    
     <!-- Mensaje de carga -->
     <div *ngIf="isLoading" class="p-5 text-center">
-      <p class="text-gray-600">Cargando palabras...</p>
+      <p class="text-gray-600">Loading words...</p>
     </div>
     
     <!-- Mensaje de error -->
@@ -19,12 +27,16 @@
     <!-- Words List -->
     <div *ngIf="!isLoading" class="p-5 px-4 flex flex-col gap-4 border-b border-gray-100 flex-1">
       
+      <div *ngIf="filteredWords.length === 0 && words.length > 0" class="text-center py-8 text-gray-500">
+        No words match your search. Try a different term.
+      </div>
+      
       <div *ngIf="words.length === 0" class="text-center py-8 text-gray-500">
         No words added yet. Click the + button to add your first word.
       </div>
       
-      <div *ngIf="words.length > 0" class="flex flex-col gap-3">
-        <div *ngFor="let word of words" class="flex justify-between items-start py-3 border-b border-gray-100 flex-1 gap-3">
+      <div *ngIf="filteredWords.length > 0" class="flex flex-col gap-3">
+        <div *ngFor="let word of filteredWords" class="flex justify-between items-start py-3 border-b border-gray-100 flex-1 gap-3">
           <div class="flex items-start gap-3 flex-1">
             <button class="bg-transparent border-none p-0 cursor-pointer text-gray-400 mt-0.5 flex-shrink-0 flex items-center justify-center w-6 h-6">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 min-w-5 min-h-5 flex-shrink-0">

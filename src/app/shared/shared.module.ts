@@ -5,13 +5,15 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FabComponent } from './components/fab/fab.component';
 import { IconsComponent } from './components/icons/icons.component';
 import { BackButtonComponent } from './components/back-button/back-button.component';
+import { SearchBarComponent } from './components/search-bar/search-bar.component';
 import { PrimeNgModule } from './primeng.module';
 
 @NgModule({
   declarations: [
     FabComponent,
     IconsComponent,
-    BackButtonComponent
+    BackButtonComponent,
+    SearchBarComponent
   ],
   imports: [
     CommonModule,
@@ -29,7 +31,8 @@ import { PrimeNgModule } from './primeng.module';
     PrimeNgModule,
     FabComponent,
     IconsComponent,
-    BackButtonComponent
+    BackButtonComponent,
+    SearchBarComponent
   ]
 })
 export class SharedModule { } 

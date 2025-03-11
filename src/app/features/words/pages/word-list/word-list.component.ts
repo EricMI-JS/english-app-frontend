@@ -18,9 +18,11 @@ interface Example {
 })
 export class WordListComponent implements OnInit, OnDestroy {
   words: Word[] = [];
+  filteredWords: Word[] = [];
   private subscription: Subscription | null = null;
   isLoading = false;
   errorMessage = '';
+  searchTerm = '';
 
   constructor(
     private router: Router,
@@ -53,6 +55,7 @@ export class WordListComponent implements OnInit, OnDestroy {
     this.subscription = this.wordService.getAllWords().subscribe({
       next: (words) => {
         this.words = words;
+        this.filteredWords = words;
         this.isLoading = false;
       },
       error: (error) => {
@@ -66,6 +69,25 @@ export class WordListComponent implements OnInit, OnDestroy {
         });
       }
     });
+  }
+  
+  onSearch(term: string): void {
+    this.searchTerm = term;
+    this.filterWords();
+  }
+  
+  filterWords(): void {
+    if (!this.searchTerm.trim()) {
+      this.filteredWords = this.words;
+      return;
+    }
+    
+    const searchTermLower = this.searchTerm.toLowerCase();
+    this.filteredWords = this.words.filter(word => 
+      word.word.toLowerCase().includes(searchTermLower) || 
+      (word.definition && word.definition.toLowerCase().includes(searchTermLower)) ||
+      (word.exampleSentence && word.exampleSentence.toLowerCase().includes(searchTermLower))
+    );
   }
   
   onAddWord(): void {
