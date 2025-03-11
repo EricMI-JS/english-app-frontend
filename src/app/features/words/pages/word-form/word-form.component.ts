@@ -100,16 +100,21 @@ export class WordFormComponent implements OnInit, OnDestroy {
    * @param word La palabra seleccionada
    */
   onWordSelect(word: string): void {
-    // Buscar la definición de la palabra seleccionada
-    const subscription = this.datamuseService.getWordDefinition(word).subscribe({
-      next: (definition: string) => {
-        if (definition) {
-          // Establecer la definición en el formulario
-          this.wordForm.get('definition')?.setValue(definition);
+    // Buscar la definición y ejemplo de la palabra seleccionada
+    const subscription = this.datamuseService.getWordInfo(word).subscribe({
+      next: (info) => {
+        // Establecer la definición en el formulario si existe
+        if (info.definition) {
+          this.wordForm.get('definition')?.setValue(info.definition);
+        }
+        
+        // Establecer el ejemplo en el formulario si existe
+        if (info.example) {
+          this.wordForm.get('exampleSentence')?.setValue(info.example);
         }
       },
       error: (error) => {
-        console.error('Error fetching definition:', error);
+        console.error('Error fetching word info:', error);
       }
     });
     this.subscriptions.add(subscription);
@@ -122,14 +127,39 @@ export class WordFormComponent implements OnInit, OnDestroy {
     const wordValue = this.wordForm.get('word')?.value;
     
     if (wordValue && wordValue.trim()) {
-      const subscription = this.datamuseService.getWordDefinition(wordValue).subscribe({
-        next: (definition: string) => {
-          if (definition) {
-            this.wordForm.get('definition')?.setValue(definition);
+      const subscription = this.datamuseService.getWordInfo(wordValue).subscribe({
+        next: (info) => {
+          if (info.definition) {
+            this.wordForm.get('definition')?.setValue(info.definition);
+          }
+          
+          if (info.example && !this.wordForm.get('exampleSentence')?.value) {
+            this.wordForm.get('exampleSentence')?.setValue(info.example);
           }
         },
         error: (error) => {
-          console.error('Error fetching definition:', error);
+          console.error('Error fetching word info:', error);
+        }
+      });
+      this.subscriptions.add(subscription);
+    }
+  }
+
+  /**
+   * Método para obtener sugerencias de ejemplos para la palabra actual
+   */
+  getExampleSuggestions(): void {
+    const wordValue = this.wordForm.get('word')?.value;
+    
+    if (wordValue && wordValue.trim()) {
+      const subscription = this.datamuseService.getWordExample(wordValue).subscribe({
+        next: (example: string) => {
+          if (example) {
+            this.wordForm.get('exampleSentence')?.setValue(example);
+          }
+        },
+        error: (error) => {
+          console.error('Error fetching example:', error);
         }
       });
       this.subscriptions.add(subscription);
