@@ -1,56 +1,94 @@
 <div class="max-w-full mx-auto h-[calc(100vh-120px)] flex flex-col bg-white">
-  <!-- Progress bar (only show when quiz is not completed) -->
-  <div *ngIf="!quizCompleted" class="h-1 bg-purple-600 transition-all duration-300 ease-in-out" [style.width.%]="(currentQuestionIndex + 1) / totalQuestions * 100"></div>
-
-  <!-- Quiz content (only show when quiz is not completed) -->
-  <div *ngIf="!quizCompleted" class="flex-1 p-4 flex flex-col">
-    <!-- Question counter -->
-    <div class="text-sm text-gray-500 mb-2">
-      Question {{ currentQuestionIndex + 1 }} of {{ totalQuestions }}
-    </div>
-
-    <!-- Question text -->
-    <div class="text-lg font-medium mb-6">
-      {{ currentQuestion.text }}
-    </div>
-
-    <!-- Answer options -->
-    <div class="flex flex-col gap-3 mb-auto">
-      <div *ngFor="let option of currentQuestion.options" 
-           (click)="selectOption(option.id)"
-           class="flex items-center p-3 border rounded-lg cursor-pointer transition-all duration-200"
-           [ngClass]="{
-             'border-purple-600 bg-purple-50': isOptionSelected(option.id),
-             'border-gray-200 hover:border-gray-300 hover:bg-gray-50': !isOptionSelected(option.id)
-           }">
-        <div class="flex-1">{{ option.text }}</div>
-        <div *ngIf="isOptionSelected(option.id)" class="ml-2 w-6 h-6 rounded-full bg-purple-600 flex items-center justify-center text-white">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="20 6 9 17 4 12"></polyline>
-          </svg>
-        </div>
-        <div *ngIf="!isOptionSelected(option.id)" class="ml-2 w-6 h-6 rounded-full border border-gray-300"></div>
-      </div>
+  <!-- Loading state -->
+  <div *ngIf="isLoading" class="flex-1 flex items-center justify-center">
+    <div class="text-center">
+      <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mb-4"></div>
+      <p class="text-gray-600">Cargando preguntas...</p>
     </div>
   </div>
 
-  <!-- Results screen (only show when quiz is completed) -->
-  <app-quiz-results *ngIf="quizCompleted" 
-                   [score]="score" 
-                   [totalQuestions]="totalQuestions"
-                   (restart)="restartQuiz()">
-  </app-quiz-results>
+  <!-- Error state -->
+  <div *ngIf="!isLoading && error" class="flex-1 flex items-center justify-center p-4">
+    <div class="text-center">
+      <div class="text-red-500 mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </div>
+      <p class="text-lg font-medium text-gray-800 mb-2">{{ error }}</p>
+      <button (click)="loadQuizQuestions()" class="mt-4 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+        Intentar de nuevo
+      </button>
+    </div>
+  </div>
 
-  <!-- Next button (only show when quiz is not completed) -->
-  <div *ngIf="!quizCompleted" class="p-4 border-t border-gray-200">
-    <button (click)="nextQuestion()" 
-            class="w-full py-3 bg-black text-white rounded-lg font-medium flex items-center justify-center transition-colors duration-200 hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed"
-            [disabled]="selectedOptionId === null">
-      Next
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-1">
-        <line x1="5" y1="12" x2="19" y2="12"></line>
-        <polyline points="12 5 19 12 12 19"></polyline>
-      </svg>
-    </button>
+  <!-- Quiz content (only show when quiz is not completed and data is loaded) -->
+  <ng-container *ngIf="!isLoading && !error && questions.length > 0">
+    <!-- Progress bar (only show when quiz is not completed) -->
+    <div *ngIf="!quizCompleted" class="h-1 bg-purple-600 transition-all duration-300 ease-in-out" [style.width.%]="(currentQuestionIndex + 1) / totalQuestions * 100"></div>
+
+    <!-- Quiz content (only show when quiz is not completed) -->
+    <div *ngIf="!quizCompleted" class="flex-1 p-4 flex flex-col">
+      <!-- Question counter -->
+      <div class="text-sm text-gray-500 mb-2">
+        Pregunta {{ currentQuestionIndex + 1 }} de {{ totalQuestions }}
+      </div>
+
+      <!-- Word to define -->
+      <div class="text-2xl font-bold mb-6 text-center py-4">
+        {{ currentQuestion.word }}
+      </div>
+
+      <!-- Answer options -->
+      <div class="flex flex-col gap-3 mb-auto">
+        <div *ngFor="let option of currentQuestion.options" 
+             (click)="selectOption(option.id)"
+             class="flex items-center p-3 border rounded-lg cursor-pointer transition-all duration-200"
+             [ngClass]="{
+               'border-purple-600 bg-purple-50': isOptionSelected(option.id),
+               'border-gray-200 hover:border-gray-300 hover:bg-gray-50': !isOptionSelected(option.id)
+             }">
+          <div class="flex-1">{{ option.text }}</div>
+          <div *ngIf="isOptionSelected(option.id)" class="ml-2 w-6 h-6 rounded-full bg-purple-600 flex items-center justify-center text-white">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+          <div *ngIf="!isOptionSelected(option.id)" class="ml-2 w-6 h-6 rounded-full border border-gray-300"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results screen (only show when quiz is completed) -->
+    <app-quiz-results *ngIf="quizCompleted" 
+                     [score]="score" 
+                     [totalQuestions]="totalQuestions"
+                     (restart)="restartQuiz()">
+    </app-quiz-results>
+
+    <!-- Next button (only show when quiz is not completed) -->
+    <div *ngIf="!quizCompleted" class="p-4 border-t border-gray-200">
+      <button (click)="nextQuestion()" 
+              class="w-full py-3 bg-black text-white rounded-lg font-medium flex items-center justify-center transition-colors duration-200 hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed"
+              [disabled]="selectedOptionId === null">
+        Siguiente
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-1">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+      </button>
+    </div>
+  </ng-container>
+
+  <!-- No questions available -->
+  <div *ngIf="!isLoading && !error && questions.length === 0" class="flex-1 flex items-center justify-center p-4">
+    <div class="text-center">
+      <p class="text-lg font-medium text-gray-800 mb-2">No hay preguntas disponibles</p>
+      <button (click)="loadQuizQuestions()" class="mt-4 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+        Intentar de nuevo
+      </button>
+    </div>
   </div>
 </div> 

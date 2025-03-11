@@ -1,18 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { PageTitleService } from '../../../../services/page-title.service';
 import { NavigationHistoryService } from '../../../../services/navigation-history.service';
-
-interface QuizQuestion {
-  id: number;
-  text: string;
-  options: QuizOption[];
-}
-
-interface QuizOption {
-  id: number;
-  text: string;
-  isCorrect: boolean;
-}
+import { QuizService, QuizQuestion, QuizOption } from '../../services/quiz.service';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-quiz',
@@ -21,52 +11,42 @@ interface QuizOption {
 })
 export class QuizComponent implements OnInit {
   currentQuestionIndex = 0;
-  selectedOptionId: number | null = null;
+  selectedOptionId: string | null = null;
   quizCompleted = false;
-  userAnswers: { questionId: number, selectedOptionId: number }[] = [];
+  userAnswers: { questionId: string, selectedOptionId: string }[] = [];
   score = 0;
-
-  questions: QuizQuestion[] = [
-    {
-      id: 1,
-      text: 'If a car travels 200 miles in 4 hours, what is its average speed?',
-      options: [
-        { id: 1, text: '40 Mph', isCorrect: true },
-        { id: 2, text: '50 Mph', isCorrect: false },
-        { id: 3, text: '60 Mph', isCorrect: false },
-        { id: 4, text: '70 Mph', isCorrect: false }
-      ]
-    },
-    {
-      id: 2,
-      text: 'Which word is a synonym for "eloquent"?',
-      options: [
-        { id: 1, text: 'Articulate', isCorrect: true },
-        { id: 2, text: 'Confused', isCorrect: false },
-        { id: 3, text: 'Silent', isCorrect: false },
-        { id: 4, text: 'Boring', isCorrect: false }
-      ]
-    },
-    {
-      id: 3,
-      text: 'What is the past tense of "begin"?',
-      options: [
-        { id: 1, text: 'Beginning', isCorrect: false },
-        { id: 2, text: 'Begun', isCorrect: false },
-        { id: 3, text: 'Began', isCorrect: true },
-        { id: 4, text: 'Beginned', isCorrect: false }
-      ]
-    }
-  ];
+  questions: QuizQuestion[] = [];
+  isLoading = true;
+  error: string | null = null;
 
   constructor(
     private pageTitleService: PageTitleService,
-    private navigationHistoryService: NavigationHistoryService
+    private navigationHistoryService: NavigationHistoryService,
+    private quizService: QuizService
   ) { }
 
   ngOnInit(): void {
-    // Establecer el título de la página
     this.pageTitleService.setPageTitle('Aptitude Test');
+    this.loadQuizQuestions();
+  }
+
+  loadQuizQuestions(): void {
+    this.isLoading = true;
+    this.error = null;
+    
+    this.quizService.getQuizQuestions()
+      .pipe(
+        finalize(() => this.isLoading = false)
+      )
+      .subscribe({
+        next: (response) => {
+          this.questions = response.questions;
+        },
+        error: (err) => {
+          console.error('Error loading quiz questions:', err);
+          this.error = 'Failed to load quiz questions. Please try again later.';
+        }
+      });
   }
 
   get currentQuestion(): QuizQuestion {
@@ -77,17 +57,16 @@ export class QuizComponent implements OnInit {
     return this.questions.length;
   }
 
-  selectOption(optionId: number): void {
+  selectOption(optionId: string): void {
     this.selectedOptionId = optionId;
   }
 
-  isOptionSelected(optionId: number): boolean {
+  isOptionSelected(optionId: string): boolean {
     return this.selectedOptionId === optionId;
   }
 
-  isCorrectOption(optionId: number): boolean {
-    const option = this.currentQuestion.options.find(opt => opt.id === optionId);
-    return option?.isCorrect || false;
+  isCorrectOption(optionId: string): boolean {
+    return this.currentQuestion.correctOptionId === optionId;
   }
 
   nextQuestion(): void {
@@ -119,6 +98,7 @@ export class QuizComponent implements OnInit {
     this.quizCompleted = false;
     this.userAnswers = [];
     this.score = 0;
+    this.loadQuizQuestions();
   }
 
   getScorePercentage(): number {

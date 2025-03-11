@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { PageTitleService } from '../../../../services/page-title.service';
 import { DatamuseService } from '../../../../services/datamuse.service';
-import { WordService, Word } from '../../../../services/word.service';
+import { WordService, Word } from '../../services/word.service';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
