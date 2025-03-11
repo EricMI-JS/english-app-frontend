@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap, catchError, throwError } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 
 export interface Word {
   id?: string;
@@ -15,7 +16,7 @@ export interface Word {
   providedIn: 'root'
 })
 export class WordService {
-  private apiUrl = 'http://localhost:3000/api/words';
+  private apiUrl = `${environment.apiUrl}/words`;
   
   // BehaviorSubject para mantener el estado de las palabras
   private wordsSubject = new BehaviorSubject<Word[]>([]);
