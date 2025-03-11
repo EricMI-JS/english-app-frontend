@@ -1,4 +1,10 @@
 <div class="flex justify-center items-stretch h-full overflow-y-auto">
+  <!-- PrimeNG Toast for messages -->
+  <p-toast></p-toast>
+  
+  <!-- PrimeNG Confirmation Dialog -->
+  <p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
+  
   <div class="bg-white w-full max-w-[450px] overflow-hidden shadow-sm flex flex-col">
     <!-- Mensaje de carga -->
     <div *ngIf="isLoading" class="p-5 text-center">

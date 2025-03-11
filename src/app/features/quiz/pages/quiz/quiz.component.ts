@@ -3,6 +3,7 @@ import { PageTitleService } from '../../../../services/page-title.service';
 import { NavigationHistoryService } from '../../../../services/navigation-history.service';
 import { QuizService, QuizQuestion, QuizOption } from '../../services/quiz.service';
 import { finalize } from 'rxjs/operators';
+import { MessageService, ConfirmationService } from 'primeng/api';
 
 @Component({
   selector: 'app-quiz',
@@ -23,7 +24,9 @@ export class QuizComponent implements OnInit {
   constructor(
     private pageTitleService: PageTitleService,
     private navigationHistoryService: NavigationHistoryService,
-    private quizService: QuizService
+    private quizService: QuizService,
+    private messageService: MessageService,
+    private confirmationService: ConfirmationService
   ) { }
 
   ngOnInit(): void {
@@ -42,10 +45,22 @@ export class QuizComponent implements OnInit {
       .subscribe({
         next: (response) => {
           this.questions = response.questions;
+          if (this.questions.length === 0) {
+            this.messageService.add({
+              severity: 'info',
+              summary: 'Information',
+              detail: 'No questions available at the moment.'
+            });
+          }
         },
         error: (err) => {
           console.error('Error loading quiz questions:', err);
           this.error = 'Failed to load quiz questions. Please try again later.';
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Failed to load quiz questions. Please try again later.'
+          });
         }
       });
   }
@@ -65,6 +80,19 @@ export class QuizComponent implements OnInit {
     // Check if the selected answer is correct and update score
     if (this.isCorrectOption(optionId)) {
       this.score++;
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Correct!',
+        detail: 'You selected the correct answer.',
+        life: 3000
+      });
+    } else {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Incorrect!',
+        detail: 'The correct answer is highlighted in green.',
+        life: 3000
+      });
     }
     
     // Save the user's answer
@@ -90,7 +118,30 @@ export class QuizComponent implements OnInit {
     } else {
       // Quiz completed
       this.quizCompleted = true;
+      this.messageService.add({
+        severity: 'info',
+        summary: 'Quiz Completed',
+        detail: `Your score: ${this.score}/${this.totalQuestions}`,
+        life: 5000
+      });
     }
+  }
+
+  confirmRestart(): void {
+    this.confirmationService.confirm({
+      message: 'Are you sure you want to restart the quiz? Your progress will be lost.',
+      header: 'Confirm Restart',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.restartQuiz();
+        this.messageService.add({
+          severity: 'info',
+          summary: 'Quiz Restarted',
+          detail: 'The quiz has been restarted.',
+          life: 3000
+        });
+      }
+    });
   }
 
   restartQuiz(): void {

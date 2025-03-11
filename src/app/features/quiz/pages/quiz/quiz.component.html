@@ -1,4 +1,10 @@
 <div class="max-w-full mx-auto h-[calc(100vh-120px)] flex flex-col bg-white">
+  <!-- PrimeNG Toast for messages -->
+  <p-toast></p-toast>
+  
+  <!-- PrimeNG Confirmation Dialog -->
+  <p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
+  
   <!-- Loading state -->
   <div *ngIf="isLoading" class="flex-1 flex items-center justify-center">
     <div class="text-center">
@@ -102,7 +108,7 @@
     <app-quiz-results *ngIf="quizCompleted" 
                      [score]="score" 
                      [totalQuestions]="totalQuestions"
-                     (restart)="restartQuiz()">
+                     (restart)="confirmRestart()">
     </app-quiz-results>
 
     <!-- Next button (only show when quiz is not completed) -->
