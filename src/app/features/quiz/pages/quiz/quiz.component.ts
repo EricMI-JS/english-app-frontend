@@ -1,16 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { PageTitleService } from '../../../../services/page-title.service';
 import { NavigationHistoryService } from '../../../../services/navigation-history.service';
 import { QuizService, QuizQuestion, QuizOption } from '../../services/quiz.service';
 import { finalize } from 'rxjs/operators';
 import { MessageService, ConfirmationService } from 'primeng/api';
+import { WordService, Word } from '../../../words/services/word.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-quiz',
   templateUrl: './quiz.component.html',
   styleUrls: ['./quiz.component.scss']
 })
-export class QuizComponent implements OnInit {
+export class QuizComponent implements OnInit, OnDestroy {
   currentQuestionIndex = 0;
   selectedOptionId: string | null = null;
   quizCompleted = false;
@@ -20,25 +22,117 @@ export class QuizComponent implements OnInit {
   isLoading = true;
   error: string | null = null;
   answerSubmitted = false;
+  
+  // Variables para la selección de palabras
+  showWordSelection = true;
+  availableWords: Word[] = [];
+  selectedWords: Word[] = [];
+  wordSelectionVisible = true;
+  isLoadingWords = false;
+  
+  private subscriptions: Subscription = new Subscription();
 
   constructor(
     private pageTitleService: PageTitleService,
     private navigationHistoryService: NavigationHistoryService,
     private quizService: QuizService,
+    private wordService: WordService,
     private messageService: MessageService,
     private confirmationService: ConfirmationService
   ) { }
 
   ngOnInit(): void {
     this.pageTitleService.setPageTitle('Aptitude Test');
-    this.loadQuizQuestions();
+    this.loadAvailableWords();
   }
-
+  
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
+  
+  /**
+   * Carga las palabras disponibles para el quiz
+   */
+  loadAvailableWords(): void {
+    this.isLoadingWords = true;
+    
+    const subscription = this.wordService.getAllWords().subscribe({
+      next: (words) => {
+        this.availableWords = words;
+        this.isLoadingWords = false;
+      },
+      error: (err) => {
+        console.error('Error loading words:', err);
+        this.isLoadingWords = false;
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to load words. Please try again later.'
+        });
+      }
+    });
+    
+    this.subscriptions.add(subscription);
+  }
+  
+  /**
+   * Inicia el quiz con las palabras seleccionadas
+   */
+  startQuiz(): void {
+    if (this.selectedWords.length < 4) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Warning',
+        detail: 'Please select at least 4 words for the quiz.'
+      });
+      return;
+    }
+    
+    this.isLoading = true;
+    this.error = null;
+    this.wordSelectionVisible = false;
+    
+    const wordIds = this.selectedWords.map(word => word.id!);
+    
+    const subscription = this.quizService.getQuizQuestionsForWords(wordIds)
+      .pipe(
+        finalize(() => this.isLoading = false)
+      )
+      .subscribe({
+        next: (response) => {
+          this.questions = response.questions;
+          if (this.questions.length === 0) {
+            this.messageService.add({
+              severity: 'info',
+              summary: 'Information',
+              detail: 'No questions available for the selected words.'
+            });
+            this.wordSelectionVisible = true;
+          }
+        },
+        error: (err) => {
+          console.error('Error loading quiz questions:', err);
+          this.error = 'Failed to load quiz questions. Please try again later.';
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Failed to load quiz questions. Please try again later.'
+          });
+          this.wordSelectionVisible = true;
+        }
+      });
+      
+    this.subscriptions.add(subscription);
+  }
+  
+  /**
+   * Carga todas las preguntas del quiz sin selección de palabras
+   */
   loadQuizQuestions(): void {
     this.isLoading = true;
     this.error = null;
     
-    this.quizService.getQuizQuestions()
+    const subscription = this.quizService.getQuizQuestions()
       .pipe(
         finalize(() => this.isLoading = false)
       )
@@ -63,6 +157,8 @@ export class QuizComponent implements OnInit {
           });
         }
       });
+      
+    this.subscriptions.add(subscription);
   }
 
   get currentQuestion(): QuizQuestion {
@@ -151,7 +247,7 @@ export class QuizComponent implements OnInit {
     this.userAnswers = [];
     this.score = 0;
     this.answerSubmitted = false;
-    this.loadQuizQuestions();
+    this.wordSelectionVisible = true;
   }
 
   getScorePercentage(): number {

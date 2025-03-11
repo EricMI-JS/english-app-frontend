@@ -5,6 +5,69 @@
   <!-- PrimeNG Confirmation Dialog -->
   <p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
   
+  <!-- Word Selection Screen -->
+  <div *ngIf="wordSelectionVisible" class="flex-1 flex flex-col">
+    <div class="p-4 border-b border-gray-200">
+      <h2 class="text-xl font-bold">Select Words for Quiz</h2>
+      <p class="text-sm text-gray-600 mt-1">Select at least 4 words to include in your quiz.</p>
+    </div>
+    
+    <!-- Loading words state -->
+    <div *ngIf="isLoadingWords" class="flex-1 flex items-center justify-center">
+      <div class="text-center">
+        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mb-4"></div>
+        <p class="text-gray-600">Loading words...</p>
+      </div>
+    </div>
+    
+    <!-- Word selection list -->
+    <div *ngIf="!isLoadingWords" class="flex-1 p-4 overflow-y-auto">
+      <div *ngIf="availableWords.length === 0" class="text-center py-8 text-gray-500">
+        No words available. Please add some words first.
+      </div>
+      
+      <div *ngIf="availableWords.length > 0" class="flex flex-col gap-2">
+        <p-table [value]="availableWords" [scrollable]="true" scrollHeight="calc(100vh - 300px)" 
+                 selectionMode="multiple" [(selection)]="selectedWords" dataKey="id"
+                 styleClass="p-datatable-sm">
+          <ng-template pTemplate="header">
+            <tr>
+              <th style="width: 3rem">
+                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+              </th>
+              <th>Word</th>
+              <th>Definition</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-word>
+            <tr>
+              <td>
+                <p-tableCheckbox [value]="word"></p-tableCheckbox>
+              </td>
+              <td>{{ word.word }}</td>
+              <td>{{ word.definition }}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+    
+    <!-- Action buttons -->
+    <div class="p-4 border-t border-gray-200">
+      <div class="flex justify-between items-center">
+        <div class="text-sm text-gray-600">
+          {{ selectedWords.length }} words selected
+          <span *ngIf="selectedWords.length < 4" class="text-red-500 ml-2">(minimum 4 required)</span>
+        </div>
+        <button (click)="startQuiz()" 
+                class="px-4 py-2 bg-purple-600 text-white rounded-lg font-medium transition-colors duration-200 hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                [disabled]="selectedWords.length < 4">
+          Start Quiz
+        </button>
+      </div>
+    </div>
+  </div>
+  
   <!-- Loading state -->
   <div *ngIf="isLoading" class="flex-1 flex items-center justify-center">
     <div class="text-center">
@@ -31,7 +94,7 @@
   </div>
 
   <!-- Quiz content (only show when quiz is not completed and data is loaded) -->
-  <ng-container *ngIf="!isLoading && !error && questions.length > 0">
+  <ng-container *ngIf="!isLoading && !error && questions.length > 0 && !wordSelectionVisible">
     <!-- Progress bar (only show when quiz is not completed) -->
     <div *ngIf="!quizCompleted" class="h-1 bg-purple-600 transition-all duration-300 ease-in-out" [style.width.%]="(currentQuestionIndex + 1) / totalQuestions * 100"></div>
 
@@ -126,11 +189,11 @@
   </ng-container>
 
   <!-- No questions available -->
-  <div *ngIf="!isLoading && !error && questions.length === 0" class="flex-1 flex items-center justify-center p-4">
+  <div *ngIf="!isLoading && !error && questions.length === 0 && !wordSelectionVisible" class="flex-1 flex items-center justify-center p-4">
     <div class="text-center">
       <p class="text-lg font-medium text-gray-800 mb-2">No questions available</p>
-      <button (click)="loadQuizQuestions()" class="mt-4 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
-        Try again
+      <button (click)="restartQuiz()" class="mt-4 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+        Back to Word Selection
       </button>
     </div>
   </div>

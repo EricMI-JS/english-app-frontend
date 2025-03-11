@@ -30,4 +30,13 @@ export class QuizService {
   getQuizQuestions(): Observable<QuizResponse> {
     return this.http.get<QuizResponse>(this.apiUrl);
   }
+  
+  /**
+   * Obtiene preguntas de quiz basadas en palabras seleccionadas
+   * @param wordIds Array de IDs de palabras seleccionadas
+   * @returns Observable con la respuesta del quiz
+   */
+  getQuizQuestionsForWords(wordIds: string[]): Observable<QuizResponse> {
+    return this.http.post<QuizResponse>(`${this.apiUrl}/custom`, { wordIds });
+  }
 } 
