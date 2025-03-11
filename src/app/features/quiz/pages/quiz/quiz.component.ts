@@ -18,6 +18,7 @@ export class QuizComponent implements OnInit {
   questions: QuizQuestion[] = [];
   isLoading = true;
   error: string | null = null;
+  answerSubmitted = false;
 
   constructor(
     private pageTitleService: PageTitleService,
@@ -59,6 +60,18 @@ export class QuizComponent implements OnInit {
 
   selectOption(optionId: string): void {
     this.selectedOptionId = optionId;
+    this.answerSubmitted = true;
+    
+    // Check if the selected answer is correct and update score
+    if (this.isCorrectOption(optionId)) {
+      this.score++;
+    }
+    
+    // Save the user's answer
+    this.userAnswers.push({
+      questionId: this.currentQuestion.id,
+      selectedOptionId: optionId
+    });
   }
 
   isOptionSelected(optionId: string): boolean {
@@ -70,22 +83,10 @@ export class QuizComponent implements OnInit {
   }
 
   nextQuestion(): void {
-    // Save the user's answer
-    if (this.selectedOptionId !== null) {
-      this.userAnswers.push({
-        questionId: this.currentQuestion.id,
-        selectedOptionId: this.selectedOptionId
-      });
-      
-      // Check if the selected answer is correct
-      if (this.isCorrectOption(this.selectedOptionId)) {
-        this.score++;
-      }
-    }
-
     if (this.currentQuestionIndex < this.questions.length - 1) {
       this.currentQuestionIndex++;
       this.selectedOptionId = null;
+      this.answerSubmitted = false;
     } else {
       // Quiz completed
       this.quizCompleted = true;
@@ -98,6 +99,7 @@ export class QuizComponent implements OnInit {
     this.quizCompleted = false;
     this.userAnswers = [];
     this.score = 0;
+    this.answerSubmitted = false;
     this.loadQuizQuestions();
   }
 

@@ -3,7 +3,7 @@
   <div *ngIf="isLoading" class="flex-1 flex items-center justify-center">
     <div class="text-center">
       <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mb-4"></div>
-      <p class="text-gray-600">Cargando preguntas...</p>
+      <p class="text-gray-600">Loading questions...</p>
     </div>
   </div>
 
@@ -19,7 +19,7 @@
       </div>
       <p class="text-lg font-medium text-gray-800 mb-2">{{ error }}</p>
       <button (click)="loadQuizQuestions()" class="mt-4 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
-        Intentar de nuevo
+        Try again
       </button>
     </div>
   </div>
@@ -33,7 +33,7 @@
     <div *ngIf="!quizCompleted" class="flex-1 p-4 flex flex-col">
       <!-- Question counter -->
       <div class="text-sm text-gray-500 mb-2">
-        Pregunta {{ currentQuestionIndex + 1 }} de {{ totalQuestions }}
+        Question {{ currentQuestionIndex + 1 }} of {{ totalQuestions }}
       </div>
 
       <!-- Word to define -->
@@ -44,19 +44,56 @@
       <!-- Answer options -->
       <div class="flex flex-col gap-3 mb-auto">
         <div *ngFor="let option of currentQuestion.options" 
-             (click)="selectOption(option.id)"
-             class="flex items-center p-3 border rounded-lg cursor-pointer transition-all duration-200"
+             (click)="!answerSubmitted && selectOption(option.id)"
+             class="flex items-center p-3 border rounded-lg transition-all duration-200"
              [ngClass]="{
                'border-purple-600 bg-purple-50': isOptionSelected(option.id),
-               'border-gray-200 hover:border-gray-300 hover:bg-gray-50': !isOptionSelected(option.id)
+               'border-gray-200 hover:border-gray-300 hover:bg-gray-50': !isOptionSelected(option.id) && !answerSubmitted,
+               'border-green-600 bg-green-50': answerSubmitted && option.id === currentQuestion.correctOptionId,
+               'border-red-600 bg-red-50': answerSubmitted && isOptionSelected(option.id) && option.id !== currentQuestion.correctOptionId,
+               'cursor-pointer': !answerSubmitted,
+               'cursor-default': answerSubmitted
              }">
           <div class="flex-1">{{ option.text }}</div>
-          <div *ngIf="isOptionSelected(option.id)" class="ml-2 w-6 h-6 rounded-full bg-purple-600 flex items-center justify-center text-white">
+          
+          <!-- Selected indicator (when not submitted) -->
+          <div *ngIf="isOptionSelected(option.id) && !answerSubmitted" class="ml-2 w-6 h-6 rounded-full bg-purple-600 flex items-center justify-center text-white">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="20 6 9 17 4 12"></polyline>
             </svg>
           </div>
-          <div *ngIf="!isOptionSelected(option.id)" class="ml-2 w-6 h-6 rounded-full border border-gray-300"></div>
+          
+          <!-- Correct answer indicator -->
+          <div *ngIf="answerSubmitted && option.id === currentQuestion.correctOptionId" class="ml-2 w-6 h-6 rounded-full bg-green-600 flex items-center justify-center text-white">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+          
+          <!-- Incorrect answer indicator -->
+          <div *ngIf="answerSubmitted && isOptionSelected(option.id) && option.id !== currentQuestion.correctOptionId" class="ml-2 w-6 h-6 rounded-full bg-red-600 flex items-center justify-center text-white">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </div>
+          
+          <!-- Empty circle (when not selected and not submitted) -->
+          <div *ngIf="!isOptionSelected(option.id) && !answerSubmitted" class="ml-2 w-6 h-6 rounded-full border border-gray-300"></div>
+        </div>
+      </div>
+      
+      <!-- Feedback message when answer is submitted -->
+      <div *ngIf="answerSubmitted" class="mt-4 p-3 rounded-lg" 
+           [ngClass]="{
+             'bg-green-50 text-green-800': isCorrectOption(selectedOptionId!),
+             'bg-red-50 text-red-800': !isCorrectOption(selectedOptionId!)
+           }">
+        <div class="font-medium">
+          {{ isCorrectOption(selectedOptionId!) ? 'Correct!' : 'Incorrect!' }}
+        </div>
+        <div class="text-sm mt-1">
+          {{ isCorrectOption(selectedOptionId!) ? 'You selected the correct answer.' : 'The correct answer is highlighted in green.' }}
         </div>
       </div>
     </div>
@@ -72,8 +109,8 @@
     <div *ngIf="!quizCompleted" class="p-4 border-t border-gray-200">
       <button (click)="nextQuestion()" 
               class="w-full py-3 bg-black text-white rounded-lg font-medium flex items-center justify-center transition-colors duration-200 hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed"
-              [disabled]="selectedOptionId === null">
-        Siguiente
+              [disabled]="!answerSubmitted">
+        Next
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-1">
           <line x1="5" y1="12" x2="19" y2="12"></line>
           <polyline points="12 5 19 12 12 19"></polyline>
@@ -85,9 +122,9 @@
   <!-- No questions available -->
   <div *ngIf="!isLoading && !error && questions.length === 0" class="flex-1 flex items-center justify-center p-4">
     <div class="text-center">
-      <p class="text-lg font-medium text-gray-800 mb-2">No hay preguntas disponibles</p>
+      <p class="text-lg font-medium text-gray-800 mb-2">No questions available</p>
       <button (click)="loadQuizQuestions()" class="mt-4 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
-        Intentar de nuevo
+        Try again
       </button>
     </div>
   </div>
