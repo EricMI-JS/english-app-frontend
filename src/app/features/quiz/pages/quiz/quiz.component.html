@@ -35,7 +35,6 @@
               <th style="width: 3rem">
                 <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
               </th>
-              <th style="width: 3rem"></th>
               <th>Word</th>
               <th>Definition</th>
             </tr>
@@ -45,30 +44,8 @@
               <td>
                 <p-tableCheckbox [value]="word"></p-tableCheckbox>
               </td>
-              <td>
-                <button class="bg-transparent border-none p-0 cursor-pointer text-gray-400 flex-shrink-0 flex items-center justify-center w-6 h-6 transition-transform duration-300 ease-in-out"
-                        (click)="toggleWordExpansion(word, $event)"
-                        [ngClass]="{'transform rotate-180': word.expanded}">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 min-w-5 min-h-5 flex-shrink-0">
-                    <polyline points="6 9 12 15 18 9"></polyline>
-                  </svg>
-                </button>
-              </td>
               <td>{{ word.word }}</td>
               <td>{{ word.definition }}</td>
-            </tr>
-            <tr *ngIf="word.expanded">
-              <td colspan="4" class="p-0">
-                <div class="p-3 bg-gray-50 border-t border-gray-200 transition-all duration-300 ease-in-out" 
-                     [ngClass]="{'opacity-100': word.expanded, 'opacity-0': !word.expanded}">
-                  <div *ngIf="word.exampleSentence" class="text-sm text-gray-700">
-                    <span class="font-medium">Example:</span> "{{ word.exampleSentence }}"
-                  </div>
-                  <div *ngIf="!word.exampleSentence" class="text-sm text-gray-500 italic">
-                    No example available for this word.
-                  </div>
-                </div>
-              </td>
             </tr>
           </ng-template>
         </p-table>

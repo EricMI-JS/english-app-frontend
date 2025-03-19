@@ -192,19 +192,6 @@ export class QuizComponent implements OnInit, OnDestroy {
     // Check if the selected answer is correct and update score
     if (this.isCorrectOption(optionId)) {
       this.score++;
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Correct!',
-        detail: 'You selected the correct answer.',
-        life: 3000
-      });
-    } else {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Incorrect!',
-        detail: 'The correct answer is highlighted in green.',
-        life: 3000
-      });
     }
     
     // Save the user's answer
@@ -230,12 +217,6 @@ export class QuizComponent implements OnInit, OnDestroy {
     } else {
       // Quiz completed
       this.quizCompleted = true;
-      this.messageService.add({
-        severity: 'info',
-        summary: 'Quiz Completed',
-        detail: `Your score: ${this.score}/${this.totalQuestions}`,
-        life: 5000
-      });
     }
   }
 
@@ -246,12 +227,6 @@ export class QuizComponent implements OnInit, OnDestroy {
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
         this.restartQuiz();
-        this.messageService.add({
-          severity: 'info',
-          summary: 'Quiz Restarted',
-          detail: 'The quiz has been restarted.',
-          life: 3000
-        });
       }
     });
   }

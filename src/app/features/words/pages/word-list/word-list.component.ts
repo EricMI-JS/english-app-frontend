@@ -58,6 +58,8 @@ export class WordListComponent implements OnInit, OnDestroy {
           expanded: false
         }));
         this.filteredWords = this.words;
+        console.log(this.filteredWords);
+        
         this.isLoading = false;
       },
       error: (error) => {

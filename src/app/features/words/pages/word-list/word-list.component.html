@@ -5,7 +5,7 @@
   <!-- PrimeNG Confirmation Dialog -->
   <p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
   
-  <div class="bg-white w-full max-w-[450px] overflow-hidden shadow-sm flex flex-col">
+  <div class="bg-white w-full max-w-[450px] shadow-sm flex flex-col h-full">
     <!-- Search Bar -->
     <div class="p-4 border-b border-gray-100">
       <app-search-bar 
@@ -25,7 +25,7 @@
     </div>
     
     <!-- Words List -->
-    <div *ngIf="!isLoading" class="p-5 px-4 flex flex-col gap-4 border-b border-gray-100 flex-1">
+    <div *ngIf="!isLoading" class="p-5 px-4 flex flex-col gap-4 border-b border-gray-100 flex-1 overflow-y-auto">
       
       <div *ngIf="filteredWords.length === 0 && words.length > 0" class="text-center py-8 text-gray-500">
         No words match your search. Try a different term.
@@ -35,7 +35,7 @@
         No words added yet. Click the + button to add your first word.
       </div>
       
-      <div *ngIf="filteredWords.length > 0" class="flex flex-col gap-3">
+      <div *ngIf="filteredWords.length > 0" class="flex flex-col gap-3 mb-10">
         <div *ngFor="let word of filteredWords" class="flex flex-col border-b border-gray-100 py-3">
           <div class="flex justify-between items-start flex-1 gap-3">
             <div class="flex items-start gap-3 flex-1">
